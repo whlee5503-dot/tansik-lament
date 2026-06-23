@@ -1,17 +1,24 @@
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export const onRequestOptions = () => new Response(null, { headers: CORS })
+
 export async function onRequestPost(context) {
   const { request, env } = context;
 
-  const apiKey = env.ANTHROPIC_API_KEY;
-
-  // API 키 확인용 로그
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: "API key not found" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
   try {
+    const apiKey = env.ANTHROPIC_API_KEY;
+
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: "API key not found" }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', ...CORS },
+      });
+    }
+
     const body = await request.json();
     const { messages, system } = body;
 
@@ -32,15 +39,13 @@ export async function onRequestPost(context) {
 
     const data = await response.json();
     return new Response(JSON.stringify(data), {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
+      headers: { 'Content-Type': 'application/json', ...CORS },
     });
+
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json', ...CORS },
     });
   }
 }
