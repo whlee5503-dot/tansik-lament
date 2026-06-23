@@ -1,6 +1,16 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
 
+  const apiKey = env.ANTHROPIC_API_KEY;
+
+  // API 키 확인용 로그
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: "API key not found" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
     const body = await request.json();
     const { messages, system } = body;
@@ -9,7 +19,7 @@ export async function onRequestPost(context) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": env.ANTHROPIC_API_KEY,
+        "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
