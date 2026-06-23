@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import VerseCard from "./VerseCard";
+import { fetchWithRetry } from "../utils/fetchWithRetry";
 import { I18N } from "../data/i18n";
 
 const DARK = {

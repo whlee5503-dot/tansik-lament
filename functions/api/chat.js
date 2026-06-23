@@ -14,7 +14,7 @@ export async function onRequestPost(context) {
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 2048,
+        max_tokens: 3000,
         system,
         messages,
       }),
@@ -22,7 +22,7 @@ export async function onRequestPost(context) {
 
     const data = await response.json();
     return new Response(JSON.stringify(data), {
-      headers: { 
+      headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
       },
