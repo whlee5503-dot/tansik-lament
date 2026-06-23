@@ -14,7 +14,7 @@ export const PAIN_TYPES = [
   },
   {
     id: "loss",
-    icon: "🕯",
+    icon: "🕯️",
     label: "상실의 슬픔",
     sub: "죽음·이별·관계의 끝",
     states: [
@@ -31,16 +31,16 @@ export const PAIN_TYPES = [
     label: "억울함과 한",
     sub: "부당함·배신·오해",
     states: [
-      { id: "betrayal",  text: "믿었던 사람에게 배신당했어요" },
+      { id: "betrayal",      text: "믿었던 사람에게 배신당했어요" },
       { id: "misunderstood", text: "아무도 내 말을 들어주지 않아요" },
-      { id: "longterm",  text: "너무 오래 참아왔어요" },
-      { id: "rage",      text: "분하고 억울해서 잠이 안 와요" },
-      { id: "give_up",   text: "다 포기하고 싶어요" },
+      { id: "longterm",      text: "너무 오래 참아왔어요" },
+      { id: "rage",          text: "분하고 억울해서 잠이 안 와요" },
+      { id: "give_up",       text: "다 포기하고 싶어요" },
     ],
   },
   {
     id: "anxiety",
-    icon: "��",
+    icon: "🌬️",
     label: "두려움과 불안",
     sub: "미래·실패·흔들림",
     states: [
