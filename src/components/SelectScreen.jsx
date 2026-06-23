@@ -1,47 +1,34 @@
 import { useState } from "react";
 import { PAIN_TYPES } from "../data/painTypes";
+import { I18N } from "../data/i18n";
 
-export default function SelectScreen({ onSelect, theme: C, mode, toggleMode }) {
+export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lang }) {
   const [hovered, setHovered] = useState(null);
+  const t = I18N[lang];
+  const pains = PAIN_TYPES[lang];
 
   return (
     <div style={{
-      minHeight: "100vh",
-      background: C.bg,
-      color: C.textPrim,
+      minHeight: "100vh", background: C.bg, color: C.textPrim,
       fontFamily: "'Georgia','Noto Serif KR',serif",
     }}>
       <div style={{
-        borderBottom: `1px solid ${C.border}`,
-        padding: "16px 20px",
+        borderBottom: `1px solid ${C.border}`, padding: "16px 20px",
         background: C.surface,
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "flex-start",
+        display: "flex", justifyContent: "space-between", alignItems: "flex-start",
       }}>
         <div>
-          <div style={{
-            fontSize: "10px", letterSpacing: "3px",
-            color: C.amber, marginBottom: "5px",
-          }}>
-            LAMENT · 탄식
+          <div style={{ fontSize: "10px", letterSpacing: "3px", color: C.amber, marginBottom: "5px" }}>
+            LAMENT · 탄식 · RATAPAN
           </div>
-          <div style={{ fontSize: "20px" }}>지금 어디가 아프신가요</div>
-          <div style={{ fontSize: "12px", color: C.textDim, marginTop: "4px" }}>
-            말씀이 당신 곁에 앉겠습니다
-          </div>
+          <div style={{ fontSize: "20px" }}>{t.appSub}</div>
         </div>
         <button onClick={toggleMode} style={{
-          background: "transparent",
-          border: `1px solid ${C.border}`,
-          color: C.textDim,
-          padding: "6px 12px",
-          borderRadius: "2px",
-          cursor: "pointer",
-          fontSize: "12px",
-          fontFamily: "inherit",
+          background: "transparent", border: `1px solid ${C.border}`,
+          color: C.textDim, padding: "6px 12px", borderRadius: "2px",
+          cursor: "pointer", fontSize: "12px", fontFamily: "inherit",
         }}>
-          {mode === "dark" ? "☀️ 라이트" : "🌙 다크"}
+          {mode === "dark" ? t.light : t.dark}
         </button>
       </div>
 
@@ -51,22 +38,17 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode }) {
           borderLeft: `3px solid ${C.amber}`,
           fontSize: "13px", color: C.textDim, lineHeight: "1.9",
         }}>
-          성경은 '항상 기뻐하라'고 말하지만, 시편 150편 중 절반은 탄식입니다.
-          예수님도 십자가에서 탄식시인 시편 22편을 인용하셨습니다.
-          여기서는 솔직한 탄식이 기도입니다.
+          {t.onboarding}
         </div>
-
         <div style={{
           fontSize: "10px", letterSpacing: "2px",
           color: C.textDim, marginBottom: "16px",
         }}>
-          고통의 자리를 선택하세요
+          {t.selectPain}
         </div>
 
-        {PAIN_TYPES.map(p => (
-          <div
-            key={p.id}
-            onClick={() => onSelect(p)}
+        {pains.map(p => (
+          <div key={p.id} onClick={() => onSelect(p)}
             onMouseEnter={() => setHovered(p.id)}
             onMouseLeave={() => setHovered(null)}
             style={{
@@ -76,8 +58,7 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode }) {
               border: `1px solid ${hovered === p.id ? C.amber : C.border}`,
               borderLeft: `3px solid ${hovered === p.id ? C.amber : C.border}`,
               borderRadius: "2px", transition: "all 0.18s",
-            }}
-          >
+            }}>
             <span style={{ fontSize: "20px", minWidth: "26px" }}>{p.icon}</span>
             <div>
               <div style={{ fontSize: "15px", marginBottom: "2px" }}>{p.label}</div>
@@ -92,7 +73,7 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode }) {
           textAlign: "center", fontSize: "11px",
           color: C.textMute, lineHeight: "1.9",
         }}>
-          당신의 한이 기도가 될 수 있습니다.
+          {t.tagline}
         </div>
       </div>
     </div>
