@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#0D0F14" rx="16"/>
-  <text x="50" y="62" font-size="52" text-anchor="middle" fill="#C89B4A">✦</text>
-  <line x1="50" y1="75" x2="50" y2="90" stroke="#C89B4A" stroke-width="2" opacity="0.6"/>
+  <rect width="100" height="100" fill="#C89B4A" rx="16"/>
+  <text x="50" y="58" font-size="52" text-anchor="middle" fill="#0D0F14">✦</text>
+  <text x="50" y="82" font-size="16" text-anchor="middle" fill="#0D0F14" font-family="Georgia, serif" letter-spacing="2">탄식</text>
 </svg>
