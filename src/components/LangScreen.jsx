@@ -8,9 +8,9 @@ const C = {
 };
 
 const LANGS = [
-  { id: "ko", label: "한국어",           sub: "Korean",          badge: "KO" },
-  { id: "en", label: "English",          sub: "",                badge: "EN" },
-  { id: "id", label: "Bahasa Indonesia", sub: "",                badge: "ID" },
+  { id: "ko", label: "한국어",           sub: "",  badge: "KO" },
+  { id: "en", label: "English",          sub: "",  badge: "EN" },
+  { id: "id", label: "Bahasa Indonesia", sub: "",  badge: "ID" },
 ];
 
 export default function LangScreen({ onSelect }) {
@@ -65,12 +65,7 @@ export default function LangScreen({ onSelect }) {
             }}>
               {l.badge}
             </div>
-            <div>
-              <div style={{ fontSize: "17px", color: C.text }}>{l.label}</div>
-              {l.sub && (
-                <div style={{ fontSize: "12px", color: C.textDim, marginTop: "2px" }}>{l.sub}</div>
-              )}
-            </div>
+            <div style={{ fontSize: "17px", color: C.text }}>{l.label}</div>
           </div>
         ))}
       </div>
