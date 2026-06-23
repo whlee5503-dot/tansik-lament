@@ -8,9 +8,9 @@ const C = {
 };
 
 const LANGS = [
-  { id: "ko", label: "한국어",           sub: "Korean",             flag: "🇰🇷" },
-  { id: "en", label: "English",          sub: "영어",                flag: "🇺🇸" },
-  { id: "id", label: "Bahasa Indonesia", sub: "인도네시아어",        flag: "��🇩" },
+  { id: "ko", label: "한국어",           sub: "Korean",          badge: "KO" },
+  { id: "en", label: "English",          sub: "",                badge: "EN" },
+  { id: "id", label: "Bahasa Indonesia", sub: "",                badge: "ID" },
 ];
 
 export default function LangScreen({ onSelect }) {
@@ -21,12 +21,12 @@ export default function LangScreen({ onSelect }) {
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center", padding: "24px",
     }}>
-      <div style={{
-        fontSize: "32px", marginBottom: "12px", color: C.amber,
-      }}>✝</div>
-      <div style={{
-        fontSize: "22px", marginBottom: "6px", textAlign: "center",
-      }}>
+      <svg width="36" height="44" viewBox="0 0 36 44" style={{ marginBottom: "16px" }}>
+        <line x1="18" y1="2"  x2="18" y2="42" stroke="#C89B4A" strokeWidth="5" strokeLinecap="round"/>
+        <line x1="4"  y1="14" x2="32" y2="14" stroke="#C89B4A" strokeWidth="5" strokeLinecap="round"/>
+      </svg>
+
+      <div style={{ fontSize: "22px", marginBottom: "6px", textAlign: "center" }}>
         Lament · 탄식 · Ratapan
       </div>
       <div style={{
@@ -56,10 +56,20 @@ export default function LangScreen({ onSelect }) {
               e.currentTarget.style.borderLeftColor = C.amber;
             }}
           >
-            <span style={{ fontSize: "28px" }}>{l.flag}</span>
+            <div style={{
+              width: "40px", height: "40px", borderRadius: "4px",
+              background: C.amber, color: C.bg,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "13px", fontWeight: "bold", letterSpacing: "1px",
+              flexShrink: 0,
+            }}>
+              {l.badge}
+            </div>
             <div>
               <div style={{ fontSize: "17px", color: C.text }}>{l.label}</div>
-              <div style={{ fontSize: "12px", color: C.textDim, marginTop: "2px" }}>{l.sub}</div>
+              {l.sub && (
+                <div style={{ fontSize: "12px", color: C.textDim, marginTop: "2px" }}>{l.sub}</div>
+              )}
             </div>
           </div>
         ))}
