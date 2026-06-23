@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import VerseCard from "./VerseCard";
-import { fetchWithRetry } from "../utils/fetchWithRetry";
 import { I18N } from "../data/i18n";
 
 const DARK = {
@@ -13,6 +12,27 @@ const LIGHT = {
   textPrim: "#1C1810", textDim: "#6B6355", textMute: "#B0A898",
   amber: "#8B6420", amberDim: "#E8D9B8",
 };
+
+const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
+
+async function callClaude(system, messages) {
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": API_KEY,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 3000,
+      system,
+      messages,
+    }),
+  });
+  return response.json();
+}
 
 function LoadingDots({ color }) {
   const [frame, setFrame] = useState(0);
@@ -69,19 +89,14 @@ Respond in JSON only:
 }`;
 
     try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system,
-          messages: [{ role: "user", content: prompt }],
-        }),
-      });
-      const data = await res.json();
+      const data = await callClaude(system, [{ role: "user", content: prompt }]);
       const raw = data.content?.map(i => i.text || "").join("").replace(/```json|```/g, "").trim();
       setResult(JSON.parse(raw));
-    } catch { setResult(null); }
-    finally { setLoading(false); }
+    } catch {
+      setResult(null);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function fetchPrayer() {
@@ -91,19 +106,17 @@ Write a lament prayer for this person. 6-8 lines. Honest, questioning God direct
 ${langInstruction}
 JSON only: {"prayer": "full prayer text"}`;
     try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system: "You are a pastor skilled in lament theology.",
-          messages: [{ role: "user", content: prompt }],
-        }),
-      });
-      const data = await res.json();
+      const data = await callClaude(
+        "You are a pastor skilled in lament theology.",
+        [{ role: "user", content: prompt }]
+      );
       const raw = data.content?.map(i => i.text || "").join("").replace(/```json|```/g, "").trim();
       setPrayer(JSON.parse(raw).prayer);
-    } catch { setPrayer(t.failed); }
-    finally { setPrayerLoading(false); }
+    } catch {
+      setPrayer(t.failed);
+    } finally {
+      setPrayerLoading(false);
+    }
   }
 
   if (loading) return (

@@ -1,0 +1,2 @@
+ResultScreen.jsx 의 모든 fetch("/api/chat") 호출을 
+callClaude(system, messages) 로 교체 필요
