@@ -43,6 +43,7 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode 
   const [loading, setLoading]             = useState(true);
   const [prayer, setPrayer]               = useState(null);
   const [prayerLoading, setPrayerLoading] = useState(false);
+  const [extraLang, setExtraLang]         = useState("ko");
 
   useEffect(() => { fetchResult(); }, []);
 
@@ -68,11 +69,11 @@ JSON으로만 응답하세요:
   },
   "reflection": "함께 앉아서 건네는 말 3문장. 동반자의 언어로. then_there, now_here와 중복 금지.",
   "extra_ot": [
-    { "ref": "구약 본문1 출처", "text_ko": "한 절 (개역개정)", "text_en": "NIV" },
-    { "ref": "구약 본문2 출처", "text_ko": "한 절 (개역개정)", "text_en": "NIV" }
+    { "ref": "구약 본문1 출처", "text_ko": "한 절 (개역개정)", "text_en": "한 절 (NIV)" },
+    { "ref": "구약 본문2 출처", "text_ko": "한 절 (개역개정)", "text_en": "한 절 (NIV)" }
   ],
   "extra_nt": [
-    { "ref": "신약 본문 출처", "text_ko": "한 절 (개역개정)", "text_en": "NIV" }
+    { "ref": "신약 본문 출처", "text_ko": "한 절 (개역개정)", "text_en": "한 절 (NIV)" }
   ]
 }`;
 
@@ -198,33 +199,58 @@ JSON만 출력: {"prayer": "기도문 전문"}`;
           {result.comfort}
         </div>
 
-        {/* 말씀 카드 */}
+        {/* 주 말씀 카드 */}
         {result.verse && (
           <div style={{ marginBottom: "16px" }}>
             <VerseCard verse={result.verse} reflection={result.reflection} mode={mode} />
           </div>
         )}
 
-        {/* 함께 읽을 말씀 — 구약 + 신약 */}
+        {/* 함께 읽을 말씀 — 구약 + 신약 + 언어 토글 */}
         {allExtra.length > 0 && (
           <div style={{
             background: C.surface, border: `1px solid ${C.border}`,
             padding: "18px 20px", borderRadius: "2px", marginBottom: "16px",
           }}>
+            {/* 헤더 + 언어 토글 */}
             <div style={{
-              fontSize: "10px", color: C.textDim,
-              letterSpacing: "2px", marginBottom: "12px",
+              display: "flex", justifyContent: "space-between",
+              alignItems: "center", marginBottom: "14px",
             }}>
-              함께 읽을 말씀
+              <div style={{
+                fontSize: "10px", color: C.textDim, letterSpacing: "2px",
+              }}>
+                함께 읽을 말씀
+              </div>
+              <div style={{ display: "flex", gap: "4px" }}>
+                {["ko", "en"].map(l => (
+                  <button key={l} onClick={() => setExtraLang(l)} style={{
+                    padding: "2px 8px", fontSize: "10px",
+                    border: `1px solid ${extraLang === l ? C.amber : C.border}`,
+                    background: extraLang === l ? C.amberDim : "transparent",
+                    color: extraLang === l ? C.amber : C.textDim,
+                    borderRadius: "2px", cursor: "pointer",
+                    fontFamily: "inherit", letterSpacing: "1px",
+                  }}>
+                    {l === "ko" ? "개역" : "NIV"}
+                  </button>
+                ))}
+              </div>
             </div>
+
             {allExtra.map((e, i) => (
               <div key={i} style={{
                 marginBottom: "12px", paddingBottom: "12px",
                 borderBottom: i < allExtra.length - 1
                   ? `1px solid ${C.border}` : "none",
               }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                  <div style={{ fontSize: "10px", color: C.amber, letterSpacing: "1px" }}>
+                <div style={{
+                  display: "flex", alignItems: "center",
+                  gap: "8px", marginBottom: "5px",
+                }}>
+                  <div style={{
+                    fontSize: "10px", color: C.amber, letterSpacing: "1px",
+                  }}>
                     {e.ref}
                   </div>
                   <div style={{
@@ -238,9 +264,9 @@ JSON만 출력: {"prayer": "기도문 전문"}`;
                 </div>
                 <div style={{
                   fontSize: "13px", color: C.textDim,
-                  lineHeight: "1.8", fontStyle: "italic",
+                  lineHeight: "1.9", fontStyle: "italic",
                 }}>
-                  {e.text_ko}
+                  {extraLang === "ko" ? e.text_ko : e.text_en}
                 </div>
               </div>
             ))}
