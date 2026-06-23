@@ -11,26 +11,30 @@ const C = {
   teal:     "#4A8A6A",
 };
 
-export default function VerseCard({ verse }) {
-  const [tab, setTab] = useState("text");
+export default function VerseCard({ verse, reflection }) {
+  const [tab, setTab]   = useState("text");
+  const [lang, setLang] = useState("ko");
 
   const tabs = [
-    { id: "text", label: "본문" },
-    { id: "then", label: "Then / There" },
-    { id: "now",  label: "Now / Here" },
+    { id: "text",       label: "본문" },
+    { id: "reflection", label: "함께 앉아서" },
+    { id: "then",       label: "Then / There" },
+    { id: "now",        label: "Now / Here" },
   ];
 
   return (
     <div style={{
-      maxWidth: "86%",
-      marginTop: "12px",
       border: `1px solid ${C.amberDim}`,
       borderLeft: `3px solid ${C.amber}`,
       borderRadius: "2px",
       overflow: "hidden",
     }}>
       {/* 탭 헤더 */}
-      <div style={{ display: "flex", borderBottom: `1px solid ${C.border}` }}>
+      <div style={{
+        display: "flex",
+        borderBottom: `1px solid ${C.border}`,
+        overflowX: "auto",
+      }}>
         {tabs.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)} style={{
             flex: 1,
@@ -40,8 +44,9 @@ export default function VerseCard({ verse }) {
             background: tab === t.id ? C.surface : "transparent",
             color: tab === t.id ? C.amber : C.textDim,
             fontSize: "11px",
-            letterSpacing: "1px",
+            letterSpacing: "0.5px",
             fontFamily: "inherit",
+            whiteSpace: "nowrap",
             borderBottom: tab === t.id
               ? `2px solid ${C.amber}`
               : "2px solid transparent",
@@ -53,62 +58,97 @@ export default function VerseCard({ verse }) {
       </div>
 
       {/* 탭 콘텐츠 */}
-      <div style={{ padding: "14px 16px" }}>
+      <div style={{ padding: "14px 16px", background: C.surface }}>
+
+        {/* 본문 탭 */}
         {tab === "text" && (
           <>
             <div style={{
-              fontSize: "10px",
-              color: C.amber,
-              letterSpacing: "1.5px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
               marginBottom: "10px",
             }}>
-              {verse.ref}
+              <div style={{
+                fontSize: "10px", color: C.amber, letterSpacing: "1.5px",
+              }}>
+                {verse.ref}
+              </div>
+              {/* KO / EN 토글 */}
+              <div style={{
+                display: "flex", gap: "4px",
+              }}>
+                {["ko", "en"].map(l => (
+                  <button key={l} onClick={() => setLang(l)} style={{
+                    padding: "2px 8px",
+                    fontSize: "10px",
+                    border: `1px solid ${lang === l ? C.amber : C.border}`,
+                    background: lang === l ? C.amberDim : "transparent",
+                    color: lang === l ? C.amber : C.textDim,
+                    borderRadius: "2px",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    letterSpacing: "1px",
+                  }}>
+                    {l === "ko" ? "개역" : "NIV"}
+                  </button>
+                ))}
+              </div>
             </div>
             <div style={{
-              fontSize: "14px",
-              color: C.textPrim,
-              lineHeight: "2",
-              fontStyle: "italic",
+              fontSize: "14px", color: C.textPrim,
+              lineHeight: "2", fontStyle: "italic",
             }}>
-              {verse.text}
+              {lang === "ko" ? verse.text_ko : verse.text_en}
             </div>
           </>
         )}
 
+        {/* 함께 앉아서 탭 */}
+        {tab === "reflection" && (
+          <>
+            <div style={{
+              fontSize: "10px", color: C.teal,
+              letterSpacing: "1.5px", marginBottom: "10px",
+            }}>
+              동반자의 말
+            </div>
+            <div style={{
+              fontSize: "13px", color: C.textPrim, lineHeight: "1.9",
+            }}>
+              {reflection}
+            </div>
+          </>
+        )}
+
+        {/* Then/There 탭 */}
         {tab === "then" && (
           <>
             <div style={{
-              fontSize: "10px",
-              color: C.dawn,
-              letterSpacing: "1.5px",
-              marginBottom: "10px",
+              fontSize: "10px", color: C.dawn,
+              letterSpacing: "1.5px", marginBottom: "10px",
             }}>
               역사적 · 언어적 · 신학적 맥락
             </div>
             <div style={{
-              fontSize: "13px",
-              color: C.textPrim,
-              lineHeight: "1.9",
+              fontSize: "13px", color: C.textPrim, lineHeight: "1.9",
             }}>
               {verse.then_there}
             </div>
           </>
         )}
 
+        {/* Now/Here 탭 */}
         {tab === "now" && (
           <>
             <div style={{
-              fontSize: "10px",
-              color: C.teal,
-              letterSpacing: "1.5px",
-              marginBottom: "10px",
+              fontSize: "10px", color: C.teal,
+              letterSpacing: "1.5px", marginBottom: "10px",
             }}>
               지금 · 여기 · 당신
             </div>
             <div style={{
-              fontSize: "13px",
-              color: C.textPrim,
-              lineHeight: "1.9",
+              fontSize: "13px", color: C.textPrim, lineHeight: "1.9",
             }}>
               {verse.now_here}
             </div>

@@ -13,9 +13,9 @@ const C = {
 };
 
 export default function ResultScreen({ pain, state, onRestart }) {
-  const [result, setResult]   = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [prayer, setPrayer]   = useState(null);
+  const [result, setResult]           = useState(null);
+  const [loading, setLoading]         = useState(true);
+  const [prayer, setPrayer]           = useState(null);
   const [prayerLoading, setPrayerLoading] = useState(false);
 
   useEffect(() => { fetchResult(); }, []);
@@ -24,9 +24,11 @@ export default function ResultScreen({ pain, state, onRestart }) {
     setLoading(true);
     const system = `당신은 한국의 한(恨)과 고통의 신학에 정통한 목회 상담자입니다.
 탄식 신학(Lament Theology), 욥기, 탄식 시편(22, 42, 77, 88편), 예레미야애가에 깊습니다.
+신약에서도 고통과 관련된 본문(롬 8:18, 고후 12:9, 히 4:15, 요 11:35 등)을 잘 압니다.
 성경 원어(히브리어·헬라어)와 역사적 맥락(Then/There)을 알고 오늘의 삶(Now/Here)에 연결합니다.
 한국인의 정서 — 한, 체념, 눈물을 삼키는 문화 — 를 이해합니다.
-공허한 위로("다 잘 될 거예요")는 절대 금지. 함께 앉아 있습니다.`;
+공허한 위로("다 잘 될 거예요")는 절대 금지. 함께 앉아 있습니다.
+구약과 신약을 골고루 사용하세요. 매번 다양한 본문을 선택하세요.`;
 
     const prompt = `고통 유형: ${pain.label} (${pain.sub})
 지금 상태: "${state.text}"
@@ -35,14 +37,15 @@ export default function ResultScreen({ pain, state, onRestart }) {
 {
   "comfort": "15자 이내 — 함께 있겠다는 한 마디",
   "verse": {
-    "ref": "시편 22:1",
-    "text": "본문 전문 (개역개정 2-4절)",
+    "ref": "시편 22:1-2",
+    "text_ko": "본문 전문 (개역개정 2-4절)",
+    "text_en": "본문 전문 (NIV)",
     "then_there": "역사적·언어적·신학적 맥락 2-3문장. 원어 단어 1개 포함.",
-    "now_here": "'${state.text}'라는 말과 연결하여 2문장."
+    "now_here": "'${state.text}'라는 말과 연결하여 2문장. reflection 내용과 중복 금지."
   },
-  "reflection": "함께 앉아서 건네는 말 3문장. 설교 아닌 동반자의 언어로.",
+  "reflection": "함께 앉아서 건네는 말 3문장. 설교 아닌 동반자의 언어로. then_there, now_here와 중복 금지.",
   "extra": [
-    { "ref": "욥기 3:3", "text": "짧은 본문 한 절" }
+    { "ref": "욥기 3:3", "text_ko": "짧은 본문 한 절 (개역개정)", "text_en": "NIV" }
   ]
 }`;
 
@@ -71,7 +74,6 @@ export default function ResultScreen({ pain, state, onRestart }) {
     setPrayerLoading(true);
     const prompt = `고통 유형: ${pain.label}
 지금 상태: "${state.text}"
-
 이 사람의 고통과 감정을 담아 하나님께 드리는 탄식 기도문을 쓰세요.
 6-8줄. 솔직하게 따져 묻는 형식으로.
 JSON만 출력: {"prayer": "기도문 전문"}`;
@@ -129,9 +131,7 @@ JSON만 출력: {"prayer": "기도문 전문"}`;
           padding: "10px 24px", background: C.amber, color: C.bg,
           border: "none", borderRadius: "2px", cursor: "pointer",
           fontFamily: "inherit", fontSize: "13px",
-        }}>
-          다시 시도
-        </button>
+        }}>다시 시도</button>
       </div>
     );
   }
@@ -141,7 +141,6 @@ JSON만 출력: {"prayer": "기도문 전문"}`;
       minHeight: "100vh", background: C.bg, color: C.textPrim,
       fontFamily: "'Georgia','Noto Serif KR',serif",
     }}>
-      {/* 헤더 */}
       <div style={{
         background: C.surface, borderBottom: `1px solid ${C.border}`,
         padding: "14px 20px",
@@ -164,31 +163,14 @@ JSON만 출력: {"prayer": "기도문 전문"}`;
           {result.comfort}
         </div>
 
-        {/* 말씀 카드 */}
+        {/* 말씀 카드 — reflection 포함 */}
         {result.verse && (
           <div style={{ marginBottom: "16px" }}>
-            <VerseCard verse={result.verse} />
+            <VerseCard verse={result.verse} reflection={result.reflection} />
           </div>
         )}
 
-        {/* 묵상 */}
-        <div style={{
-          background: C.surface, border: `1px solid ${C.border}`,
-          borderLeft: `3px solid ${C.amber}`,
-          padding: "18px 20px", borderRadius: "2px", marginBottom: "16px",
-        }}>
-          <div style={{
-            fontSize: "10px", color: C.textDim,
-            letterSpacing: "2px", marginBottom: "12px",
-          }}>
-            함께 앉아서
-          </div>
-          <div style={{ fontSize: "14px", color: C.textPrim, lineHeight: "1.9" }}>
-            {result.reflection}
-          </div>
-        </div>
-
-        {/* 추가 본문 */}
+        {/* 함께 읽을 말씀 */}
         {result.extra && result.extra.length > 0 && (
           <div style={{
             background: C.surface, border: `1px solid ${C.border}`,
@@ -216,7 +198,7 @@ JSON만 출력: {"prayer": "기도문 전문"}`;
                   fontSize: "13px", color: C.textDim,
                   lineHeight: "1.8", fontStyle: "italic",
                 }}>
-                  {e.text}
+                  {e.text_ko}
                 </div>
               </div>
             ))}
@@ -225,18 +207,14 @@ JSON만 출력: {"prayer": "기도문 전문"}`;
 
         {/* 탄식 기도문 */}
         {!prayer && (
-          <button
-            onClick={fetchPrayer}
-            disabled={prayerLoading}
-            style={{
-              width: "100%", padding: "13px",
-              background: prayerLoading ? C.amberDim : C.amber,
-              color: C.bg, border: "none", borderRadius: "2px",
-              fontSize: "13px", letterSpacing: "1px",
-              cursor: prayerLoading ? "not-allowed" : "pointer",
-              fontFamily: "inherit", marginBottom: "10px",
-            }}
-          >
+          <button onClick={fetchPrayer} disabled={prayerLoading} style={{
+            width: "100%", padding: "13px",
+            background: prayerLoading ? C.amberDim : C.amber,
+            color: C.bg, border: "none", borderRadius: "2px",
+            fontSize: "13px", letterSpacing: "1px",
+            cursor: prayerLoading ? "not-allowed" : "pointer",
+            fontFamily: "inherit", marginBottom: "10px",
+          }}>
             {prayerLoading ? "기도문을 쓰는 중..." : "✦ 나의 탄식 기도문 받기"}
           </button>
         )}
@@ -262,15 +240,12 @@ JSON만 출력: {"prayer": "기도문 전문"}`;
           </div>
         )}
 
-        <button
-          onClick={onRestart}
-          style={{
-            width: "100%", padding: "12px", background: "transparent",
-            border: `1px solid ${C.border}`, color: C.textDim,
-            borderRadius: "2px", cursor: "pointer",
-            fontFamily: "inherit", fontSize: "12px", letterSpacing: "1px",
-          }}
-        >
+        <button onClick={onRestart} style={{
+          width: "100%", padding: "12px", background: "transparent",
+          border: `1px solid ${C.border}`, color: C.textDim,
+          borderRadius: "2px", cursor: "pointer",
+          fontFamily: "inherit", fontSize: "12px", letterSpacing: "1px",
+        }}>
           다른 고통의 자리로
         </button>
       </div>
