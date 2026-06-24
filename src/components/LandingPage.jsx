@@ -181,13 +181,13 @@ export default function LandingPage({ onStart, mode, toggleMode, lang, setLang }
               <div style={{ fontSize: "13px", color: C.text }}>{b.version}</div>
             </div>
           ))}
-          <div style={{ fontSize: "11px", color: C.textMute, marginTop: "10px", lineHeight: "1.7" }}>
+          <div style={{ fontSize: "13px", color: C.textDim, marginTop: "10px", lineHeight: "1.7" }}>
             {t.bibleNote}
           </div>
         </div>
 
-        {/* 언어 선택 안내 */}
-        <div style={{ fontSize: "12px", color: C.textMute, textAlign: "center", marginBottom: "10px", lineHeight: "1.7" }}>
+        <div style={{ fontSize: "14px", color: C.textDim, textAlign: "center", marginBottom: "10px", lineHeight: "1.7" }}>
+          {lang === "ko" ? "선택한 언어로 앱이 진행됩니다. 이후 변경하려면 여기로 돌아오세요." : lang === "id" ? "Aplikasi akan berjalan dalam bahasa yang dipilih. Untuk mengubah, kembali ke sini." : "The app will proceed in your selected language. Return here to change it."}
           {lang === "ko" ? "선택한 언어로 앱이 진행됩니다. 이후 변경하려면 처음으로 돌아오세요." : lang === "id" ? "Aplikasi akan berjalan dalam bahasa yang dipilih. Untuk mengubah, kembali ke halaman ini." : "The app will proceed in your selected language. Return here to change it."}
         </div>
         {/* 시작하기 */}

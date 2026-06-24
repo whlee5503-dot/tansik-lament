@@ -7,7 +7,7 @@ export const I18N = {
     tagline: "당신의 한이 기도가 될 수 있습니다.",
     howAreYou: "지금 어떠세요?",
     selectClosest: "가장 가까운 것을 선택하세요",
-    back: "← 다시 선택",
+    back: "← 다른 고통의 선택",
     searching: "말씀을 찾고 있습니다",
     tabVerse: "본문",
     tabThen: "그때 / 거기서",

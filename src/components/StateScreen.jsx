@@ -22,7 +22,7 @@ export default function StateScreen({ pain, onSelect, onBack, theme: C, mode, to
         background: C.surface,
         display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
-        <div style={{ fontSize: "10px", letterSpacing: "2px", color: C.amber }}>
+        <div style={{ fontSize: "16px", letterSpacing: "1px", color: C.amber }}>
           {pain.icon} {pain.label}
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>

@@ -234,10 +234,9 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
         padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <button onClick={goHome} style={{ background: "transparent", border: "none", color: C.amber, cursor: "pointer", fontSize: "22px", padding: "0" }}>🏠</button>
           <div>
-            <div style={{ fontSize: "11px", letterSpacing: "2px", color: C.amber }}>{pain.icon} {pain.label}</div>
-            <div style={{ fontSize: "12px", color: C.textDim, marginTop: "1px" }}>"{state.text}"</div>
+            <div style={{ fontSize: "16px", letterSpacing: "1px", color: C.amber }}>{pain.icon} {pain.label}</div>
+            <div style={{ fontSize: "13px", color: C.textDim, marginTop: "2px" }}>"{state.text}"</div>
           </div>
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
@@ -384,7 +383,17 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
           width: "100%", padding: "12px", background: "transparent",
           border: "1px solid " + C.border, color: C.textPrim,
           borderRadius: "2px", cursor: "pointer", fontFamily: "inherit", fontSize: "13px",
-        }}>{t.restart}</button>
+          marginBottom: "8px",
+        }}>
+          {lang === "ko" ? "← 다시 선택" : lang === "id" ? "← Pilih lagi" : "← Choose again"}
+        </button>
+        <button onClick={goHome} style={{
+          width: "100%", padding: "12px", background: "transparent",
+          border: "1px solid " + C.border, color: C.textDim,
+          borderRadius: "2px", cursor: "pointer", fontFamily: "inherit", fontSize: "13px",
+        }}>
+          🏠 {lang === "ko" ? "처음으로 돌아가기" : lang === "id" ? "Kembali ke awal" : "Back to home"}
+        </button>
       </div>
     </div>
   );

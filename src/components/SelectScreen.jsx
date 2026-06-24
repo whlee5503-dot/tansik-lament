@@ -25,8 +25,8 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lan
         background: C.surface,
         display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
-        <div style={{ fontSize: "10px", letterSpacing: "3px", color: C.amber }}>
-          LAMENT · 탄식 · RATAPAN
+        <div style={{ fontSize: "15px", letterSpacing: "2px", color: C.amber }}>
+          탄식 · LAMENT · RATAPAN
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
           {/* 선택된 언어 국기만 표시 */}
