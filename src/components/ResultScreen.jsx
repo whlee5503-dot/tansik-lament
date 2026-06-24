@@ -241,13 +241,12 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
           </div>
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-          {LANG_FLAGS.map(l => (
-            <button key={l.id} onClick={() => setLang(l.id)} style={{
-              padding: "4px 8px", fontSize: "18px", cursor: "pointer",
-              border: "1px solid " + (lang === l.id ? C.amber : C.border),
-              background: lang === l.id ? C.amberDim : "transparent",
-              borderRadius: "4px", lineHeight: 1, opacity: lang === l.id ? 1 : 0.6,
-            }}>{l.flag}</button>
+          {LANG_FLAGS.filter(l => l.id === lang).map(l => (
+            <span key={l.id} style={{
+              fontSize: "20px", padding: "4px 8px",
+              border: "1px solid " + C.amber,
+              borderRadius: "4px", background: C.amberDim,
+            }}>{l.flag}</span>
           ))}
           <button onClick={toggleMode} style={{
             background: "transparent", border: "1px solid " + C.border,
