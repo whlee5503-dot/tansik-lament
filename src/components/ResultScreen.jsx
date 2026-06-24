@@ -162,7 +162,7 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
         const lf = lang === "ko"
           ? '"text_ko": "개역한글", "text_en": "KJV"'
           : lang === "en" ? '"text_en": "KJV"'
-          : '"text_id": "AYT"';
+          : '"text_id": "Ayat dalam AYT (Alkitab Yang Terbuka) bahasa Indonesia"';
         const data = await callClaude(system,
           'Pain: ' + pain.label + ', State: "' + state.text + '"\nJSON only: {"extra_ot":[{"ref":"OT1",' + lf + '},{"ref":"OT2",' + lf + '}],"extra_nt":[{"ref":"NT1",' + lf + '}]}', 600);
         setter(data);
