@@ -19,24 +19,22 @@ export const THEMES = {
 };
 
 export default function App() {
-  const [phase, setPhase]   = useState("landing"); // landing | lang | select | state | result
-  const [lang, setLang]     = useState(null);
-  const [pain, setPain]     = useState(null);
-  const [state, setState]   = useState(null);
-  const [mode, setMode]     = useState("dark");
+  const [phase, setPhase] = useState("landing");
+  const [lang, setLang]   = useState(null);
+  const [pain, setPain]   = useState(null);
+  const [state, setState] = useState(null);
+  const [mode, setMode]   = useState("dark");
   const theme = THEMES[mode];
 
   function toggleMode() { setMode(m => m === "dark" ? "light" : "dark"); }
-  function restart() { setPain(null); setState(null); setPhase("lang"); }
+
+  // "다른 고통의 자리로" → 고통 선택으로 (언어 유지)
+  function restart() { setPain(null); setState(null); setPhase("select"); }
 
   const common = { theme, mode, toggleMode, lang };
 
   if (phase === "landing") return (
-    <LandingPage
-      mode={mode}
-      toggleMode={toggleMode}
-      onStart={() => setPhase("lang")}
-    />
+    <LandingPage mode={mode} toggleMode={toggleMode} onStart={() => setPhase("lang")} />
   );
   if (phase === "lang") return (
     <LangScreen onSelect={l => { setLang(l); setPhase("select"); }} />

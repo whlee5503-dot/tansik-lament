@@ -251,7 +251,7 @@ JSON only: {"prayer": "full prayer text"}`;
                   </div>
                 </div>
                 <div style={{
-                  fontSize: "13px", color: C.textDim,
+                  fontSize: "13px", color: C.textPrim,
                   lineHeight: "1.9", fontStyle: "italic",
                 }}>
                   {extraText(e)}
@@ -295,7 +295,7 @@ JSON only: {"prayer": "full prayer text"}`;
 
         <button onClick={onRestart} style={{
           width: "100%", padding: "12px", background: "transparent",
-          border: `1px solid ${C.border}`, color: C.textDim,
+          border: `1px solid ${C.border}`, color: C.textPrim,
           borderRadius: "2px", cursor: "pointer",
           fontFamily: "inherit", fontSize: "12px", letterSpacing: "1px",
         }}>
