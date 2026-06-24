@@ -1,6 +1,6 @@
 import { useState } from "react";
-import LangScreen    from "./components/LangScreen";
 import LandingPage   from "./components/LandingPage";
+import LangScreen    from "./components/LangScreen";
 import SelectScreen  from "./components/SelectScreen";
 import StateScreen   from "./components/StateScreen";
 import ResultScreen  from "./components/ResultScreen";
@@ -19,21 +19,35 @@ export const THEMES = {
 };
 
 export default function App() {
-  const [lang, setLang]       = useState(null);
-  const [started, setStarted] = useState(false);
-  const [pain, setPain]       = useState(null);
-  const [state, setState]     = useState(null);
-  const [mode, setMode]       = useState("dark");
+  const [phase, setPhase]   = useState("landing"); // landing | lang | select | state | result
+  const [lang, setLang]     = useState(null);
+  const [pain, setPain]     = useState(null);
+  const [state, setState]   = useState(null);
+  const [mode, setMode]     = useState("dark");
   const theme = THEMES[mode];
 
   function toggleMode() { setMode(m => m === "dark" ? "light" : "dark"); }
-  function restart() { setPain(null); setState(null); setStarted(false); }
+  function restart() { setPain(null); setState(null); setPhase("lang"); }
 
   const common = { theme, mode, toggleMode, lang };
 
-  if (!lang)    return <LangScreen onSelect={setLang} />;
-  if (!started) return <LandingPage lang={lang} onStart={() => setStarted(true)} mode={mode} toggleMode={toggleMode} />;
-  if (!pain)    return <SelectScreen onSelect={setPain} {...common} />;
-  if (!state)   return <StateScreen pain={pain} onSelect={setState} onBack={() => setStarted(false)} {...common} />;
-  return <ResultScreen pain={pain} state={state} onRestart={restart} {...common} />;
+  if (phase === "landing") return (
+    <LandingPage
+      mode={mode}
+      toggleMode={toggleMode}
+      onStart={() => setPhase("lang")}
+    />
+  );
+  if (phase === "lang") return (
+    <LangScreen onSelect={l => { setLang(l); setPhase("select"); }} />
+  );
+  if (phase === "select") return (
+    <SelectScreen onSelect={p => { setPain(p); setPhase("state"); }} {...common} />
+  );
+  if (phase === "state") return (
+    <StateScreen pain={pain} onSelect={s => { setState(s); setPhase("result"); }} onBack={() => setPhase("select")} {...common} />
+  );
+  return (
+    <ResultScreen pain={pain} state={state} onRestart={restart} {...common} />
+  );
 }

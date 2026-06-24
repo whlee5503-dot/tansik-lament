@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const DARK = {
   bg:      "#0D0F14",
   surface: "#161922",
@@ -34,7 +36,7 @@ const CONTENT = {
       { lang: "Indonesia", version: "AYT · WEB" },
     ],
     bibleNote: "* AI가 생성한 본문은 공개 도메인 버전을 기반으로 하며, 정확한 본문은 해당 성경을 직접 확인하세요.",
-    start: "시작하기 →",
+    start: "언어 선택하기 →",
     light: "☀️ 라이트",
     dark: "🌙 다크",
   },
@@ -51,7 +53,7 @@ const CONTENT = {
       { lang: "Indonesia", version: "AYT · WEB" },
     ],
     bibleNote: "* AI-generated text is based on public domain versions. Please verify exact wording in your own Bible.",
-    start: "Begin →",
+    start: "Choose Language →",
     light: "☀️ Light",
     dark: "🌙 Dark",
   },
@@ -68,15 +70,22 @@ const CONTENT = {
       { lang: "Indonesia", version: "AYT · WEB" },
     ],
     bibleNote: "* Teks yang dihasilkan AI didasarkan pada versi domain publik. Harap verifikasi teks yang tepat di Alkitab Anda.",
-    start: "Mulai →",
+    start: "Pilih Bahasa →",
     light: "☀️ Terang",
     dark: "🌙 Gelap",
   },
 };
 
-export default function LandingPage({ lang, onStart, mode, toggleMode }) {
+const LANG_TABS = [
+  { id: "ko", label: "한국어" },
+  { id: "en", label: "English" },
+  { id: "id", label: "Indonesia" },
+];
+
+export default function LandingPage({ onStart, mode, toggleMode }) {
   const C = mode === "dark" ? DARK : LIGHT;
-  const t = CONTENT[lang] || CONTENT.ko;
+  const [activeLang, setActiveLang] = useState("ko");
+  const t = CONTENT[activeLang];
 
   return (
     <div style={{
@@ -86,29 +95,47 @@ export default function LandingPage({ lang, onStart, mode, toggleMode }) {
       {/* 헤더 */}
       <div style={{
         background: C.surface, borderBottom: `1px solid ${C.border}`,
-        padding: "20px 20px 16px",
-        display: "flex", justifyContent: "space-between", alignItems: "flex-start",
+        padding: "16px 20px",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
-        <div style={{ textAlign: "center", flex: 1 }}>
-          <svg width="28" height="36" viewBox="0 0 32 40" style={{ marginBottom: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <svg width="24" height="30" viewBox="0 0 32 40">
             <line x1="16" y1="2" x2="16" y2="38" stroke={C.amber} strokeWidth="5" strokeLinecap="round"/>
             <line x1="4" y1="13" x2="28" y2="13" stroke={C.amber} strokeWidth="5" strokeLinecap="round"/>
           </svg>
-          <div style={{ fontSize: "20px", marginBottom: "4px" }}>
-            Lament · 탄식 · Ratapan
-          </div>
-          <div style={{ fontSize: "12px", color: C.amber, fontStyle: "italic" }}>
-            "{t.subtitle}"
+          <div>
+            <div style={{ fontSize: "16px" }}>Lament · 탄식 · Ratapan</div>
+            <div style={{ fontSize: "11px", color: C.amber, fontStyle: "italic" }}>
+              "{t.subtitle}"
+            </div>
           </div>
         </div>
         <button onClick={toggleMode} style={{
           background: "transparent", border: `1px solid ${C.border}`,
           color: C.textDim, padding: "6px 10px", borderRadius: "2px",
           cursor: "pointer", fontSize: "11px", fontFamily: "inherit",
-          flexShrink: 0,
         }}>
           {mode === "dark" ? t.light : t.dark}
         </button>
+      </div>
+
+      {/* 언어 탭 */}
+      <div style={{
+        display: "flex", borderBottom: `1px solid ${C.border}`,
+        background: C.surface,
+      }}>
+        {LANG_TABS.map(l => (
+          <button key={l.id} onClick={() => setActiveLang(l.id)} style={{
+            flex: 1, padding: "10px", border: "none", cursor: "pointer",
+            background: "transparent",
+            color: activeLang === l.id ? C.amber : C.textDim,
+            fontSize: "12px", fontFamily: "inherit", letterSpacing: "0.5px",
+            borderBottom: activeLang === l.id ? `2px solid ${C.amber}` : "2px solid transparent",
+            transition: "all 0.15s",
+          }}>
+            {l.label}
+          </button>
+        ))}
       </div>
 
       <div style={{ maxWidth: "620px", margin: "0 auto", padding: "24px 16px 48px" }}>
@@ -119,16 +146,10 @@ export default function LandingPage({ lang, onStart, mode, toggleMode }) {
           borderLeft: `3px solid ${C.amber}`,
           borderRadius: "2px", padding: "18px 20px", marginBottom: "16px",
         }}>
-          <div style={{
-            fontSize: "10px", color: C.amber,
-            letterSpacing: "2px", marginBottom: "12px",
-          }}>
+          <div style={{ fontSize: "10px", color: C.amber, letterSpacing: "2px", marginBottom: "12px" }}>
             {t.about}
           </div>
-          <div style={{
-            fontSize: "14px", color: C.text,
-            lineHeight: "1.9", whiteSpace: "pre-line",
-          }}>
+          <div style={{ fontSize: "14px", color: C.text, lineHeight: "1.9", whiteSpace: "pre-line" }}>
             {t.aboutText}
           </div>
         </div>
@@ -138,17 +159,11 @@ export default function LandingPage({ lang, onStart, mode, toggleMode }) {
           background: C.surface, border: `1px solid ${C.border}`,
           borderRadius: "2px", padding: "18px 20px", marginBottom: "16px",
         }}>
-          <div style={{
-            fontSize: "10px", color: C.amber,
-            letterSpacing: "2px", marginBottom: "14px",
-          }}>
+          <div style={{ fontSize: "10px", color: C.amber, letterSpacing: "2px", marginBottom: "14px" }}>
             {t.howTitle}
           </div>
           {t.steps.map((step, i) => (
-            <div key={i} style={{
-              display: "flex", alignItems: "center",
-              gap: "14px", marginBottom: "12px",
-            }}>
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "12px" }}>
               <div style={{
                 width: "26px", height: "26px", borderRadius: "50%",
                 background: C.amber, color: mode === "dark" ? "#0D0F14" : "#FFFFFF",
@@ -157,9 +172,7 @@ export default function LandingPage({ lang, onStart, mode, toggleMode }) {
               }}>
                 {i + 1}
               </div>
-              <div style={{ fontSize: "14px", color: C.text, lineHeight: "1.6" }}>
-                {step}
-              </div>
+              <div style={{ fontSize: "14px", color: C.text, lineHeight: "1.6" }}>{step}</div>
             </div>
           ))}
         </div>
@@ -169,27 +182,20 @@ export default function LandingPage({ lang, onStart, mode, toggleMode }) {
           background: C.surface, border: `1px solid ${C.border}`,
           borderRadius: "2px", padding: "18px 20px", marginBottom: "24px",
         }}>
-          <div style={{
-            fontSize: "10px", color: C.amber,
-            letterSpacing: "2px", marginBottom: "14px",
-          }}>
+          <div style={{ fontSize: "10px", color: C.amber, letterSpacing: "2px", marginBottom: "14px" }}>
             {t.bibleTitle}
           </div>
           {t.bibles.map((b, i) => (
             <div key={i} style={{
-              display: "flex", justifyContent: "space-between",
-              alignItems: "center", marginBottom: "10px",
-              paddingBottom: "10px",
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              marginBottom: "10px", paddingBottom: "10px",
               borderBottom: i < t.bibles.length - 1 ? `1px solid ${C.border}` : "none",
             }}>
               <div style={{ fontSize: "12px", color: C.textDim }}>{b.lang}</div>
               <div style={{ fontSize: "13px", color: C.text }}>{b.version}</div>
             </div>
           ))}
-          <div style={{
-            fontSize: "11px", color: C.textMute,
-            marginTop: "10px", lineHeight: "1.7",
-          }}>
+          <div style={{ fontSize: "11px", color: C.textMute, marginTop: "10px", lineHeight: "1.7" }}>
             {t.bibleNote}
           </div>
         </div>
