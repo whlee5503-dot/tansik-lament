@@ -176,7 +176,7 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
     try {
       const data = await callClaude(
         "You are a pastor skilled in lament theology. " + getLangInstruction(lang),
-        'Pain: ' + pain.label + ', State: "' + state.text + '"\nWrite a lament prayer. 6-8 lines. Honest, questioning God.\nJSON only: {"prayer": "full prayer text"}', 500);
+        'Pain: ' + pain.label + ', State: "' + state.text + '"\nWrite a lament prayer. 6-8 lines. Honest, questioning God directly. Use modern contemporary English (avoid thee, thou, hast, dost, wilt, thy).\nJSON only: {"prayer": "full prayer text"}', 500);
       setPrayer(data.prayer);
     } catch { setPrayer(t.failed); }
     finally { setLoadingSection(null); }
