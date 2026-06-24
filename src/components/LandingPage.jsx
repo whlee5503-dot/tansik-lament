@@ -1,25 +1,12 @@
-import { useState } from "react";
-
 const DARK = {
-  bg:      "#0D0F14",
-  surface: "#161922",
-  border:  "#252A36",
-  text:    "#E2DED6",
-  textDim: "#7A8099",
-  textMute:"#6B7090",
-  amber:   "#C89B4A",
-  amberDim:"#5C4520",
+  bg: "#0D0F14", surface: "#161922", border: "#252A36",
+  text: "#E2DED6", textDim: "#7A8099", textMute: "#6B7090",
+  amber: "#C89B4A", amberDim: "#5C4520",
 };
-
 const LIGHT = {
-  bg:      "#F7F4EE",
-  surface: "#FFFFFF",
-  border:  "#DDD8CC",
-  text:    "#1C1810",
-  textDim: "#6B6355",
-  textMute:"#8B8070",
-  amber:   "#8B6420",
-  amberDim:"#E8D9B8",
+  bg: "#F7F4EE", surface: "#FFFFFF", border: "#DDD8CC",
+  text: "#1C1810", textDim: "#6B6355", textMute: "#8B8070",
+  amber: "#8B6420", amberDim: "#E8D9B8",
 };
 
 const CONTENT = {
@@ -28,7 +15,7 @@ const CONTENT = {
     about: "이 앱에 대하여",
     aboutText: "이 앱은 성경 전체가 아닌, 탄식과 애도의 언어에 집중한 본문들을 모았습니다. 고통을 서둘러 해결하거나 위로하지 않고, 말씀이 곁에 앉아 있도록 돕는 것이 목적입니다.\n\n구약의 탄식(욥기·시편·예레미야애가)과 신약의 공감(히브리서 4:15·요한복음 11:35)을 함께 담아 신학적 균형을 맞추었습니다.",
     howTitle: "사용 방법",
-    steps: ["언어 선택", "고통의 자리 선택", "지금 상태 선택", "말씀이 곁에 앉습니다"],
+    steps: ["고통의 자리 선택", "지금 상태 선택", "말씀이 곁에 앉습니다"],
     bibleTitle: "성경 버전 (모두 공개 도메인)",
     bibles: [
       { lang: "한국어", version: "개역한글" },
@@ -36,7 +23,7 @@ const CONTENT = {
       { lang: "Indonesia", version: "AYT · WEB" },
     ],
     bibleNote: "* AI가 생성한 본문은 공개 도메인 버전을 기반으로 하며, 정확한 본문은 해당 성경을 직접 확인하세요.",
-    start: "언어 선택하기 →",
+    start: "시작하기 →",
     light: "☀️ 라이트",
     dark: "🌙 다크",
   },
@@ -45,7 +32,7 @@ const CONTENT = {
     about: "About This App",
     aboutText: "This app does not cover the whole Bible. It focuses on passages of lament and grief — the language of honest pain before God. The goal is not to quickly comfort or resolve suffering, but to let the Word sit beside you.\n\nOT lament (Job, Psalms, Lamentations) and NT empathy (Heb 4:15, John 11:35) are held together in theological balance.",
     howTitle: "How to Use",
-    steps: ["Choose your language", "Choose where it hurts", "Choose how you feel right now", "The Word sits with you"],
+    steps: ["Choose where it hurts", "Choose how you feel right now", "The Word sits with you"],
     bibleTitle: "Bible Versions (All Public Domain)",
     bibles: [
       { lang: "한국어", version: "개역한글 (Korean)" },
@@ -53,7 +40,7 @@ const CONTENT = {
       { lang: "Indonesia", version: "AYT · WEB" },
     ],
     bibleNote: "* AI-generated text is based on public domain versions. Please verify exact wording in your own Bible.",
-    start: "Choose Language →",
+    start: "Begin →",
     light: "☀️ Light",
     dark: "🌙 Dark",
   },
@@ -62,7 +49,7 @@ const CONTENT = {
     about: "Tentang Aplikasi Ini",
     aboutText: "Aplikasi ini tidak mencakup seluruh Alkitab. Ini berfokus pada bagian-bagian ratapan dan dukacita — bahasa kejujuran di hadapan Allah. Tujuannya bukan untuk segera menghibur atau menyelesaikan penderitaan, tetapi membiarkan Firman duduk bersamamu.\n\nRatapan PL (Ayub, Mazmur, Ratapan) dan empati PB (Ibr 4:15, Yoh 11:35) disatukan dalam keseimbangan teologis.",
     howTitle: "Cara Menggunakan",
-    steps: ["Pilih bahasa", "Pilih di mana sakitmu", "Pilih bagaimana perasaanmu sekarang", "Firman duduk bersamamu"],
+    steps: ["Pilih di mana sakitmu", "Pilih bagaimana perasaanmu sekarang", "Firman duduk bersamamu"],
     bibleTitle: "Versi Alkitab (Semua Domain Publik)",
     bibles: [
       { lang: "한국어", version: "개역한글 (Korea)" },
@@ -70,9 +57,9 @@ const CONTENT = {
       { lang: "Indonesia", version: "AYT · WEB" },
     ],
     bibleNote: "* Teks yang dihasilkan AI didasarkan pada versi domain publik. Harap verifikasi teks yang tepat di Alkitab Anda.",
-    start: "Pilih Bahasa →",
+    start: "Mulai →",
     light: "☀️ Terang",
-    dark: "🌙 Gelap",
+    dark: "�� Gelap",
   },
 };
 
@@ -82,10 +69,9 @@ const LANG_TABS = [
   { id: "id", label: "Indonesia" },
 ];
 
-export default function LandingPage({ onStart, mode, toggleMode }) {
+export default function LandingPage({ onStart, mode, toggleMode, lang, setLang }) {
   const C = mode === "dark" ? DARK : LIGHT;
-  const [activeLang, setActiveLang] = useState("ko");
-  const t = CONTENT[activeLang];
+  const t = CONTENT[lang] || CONTENT.ko;
 
   return (
     <div style={{
@@ -125,12 +111,12 @@ export default function LandingPage({ onStart, mode, toggleMode }) {
         background: C.surface,
       }}>
         {LANG_TABS.map(l => (
-          <button key={l.id} onClick={() => setActiveLang(l.id)} style={{
+          <button key={l.id} onClick={() => setLang(l.id)} style={{
             flex: 1, padding: "10px", border: "none", cursor: "pointer",
             background: "transparent",
-            color: activeLang === l.id ? C.amber : C.textDim,
-            fontSize: "12px", fontFamily: "inherit", letterSpacing: "0.5px",
-            borderBottom: activeLang === l.id ? `2px solid ${C.amber}` : "2px solid transparent",
+            color: lang === l.id ? C.amber : C.textDim,
+            fontSize: "12px", fontFamily: "inherit",
+            borderBottom: lang === l.id ? `2px solid ${C.amber}` : "2px solid transparent",
             transition: "all 0.15s",
           }}>
             {l.label}
@@ -200,7 +186,7 @@ export default function LandingPage({ onStart, mode, toggleMode }) {
           </div>
         </div>
 
-        {/* 시작하기 버튼 */}
+        {/* 시작하기 */}
         <button onClick={onStart} style={{
           width: "100%", padding: "15px",
           background: C.amber, color: mode === "dark" ? "#0D0F14" : "#FFFFFF",

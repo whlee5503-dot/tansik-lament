@@ -43,7 +43,7 @@ function LoadingDots({ color }) {
   return <span style={{ color, letterSpacing: "2px", fontSize: "20px" }}>✦{"...".slice(0, frame)}</span>;
 }
 
-export default function ResultScreen({ pain, state, onRestart, mode, toggleMode, lang }) {
+export default function ResultScreen({ pain, state, onRestart, mode, toggleMode, lang, setLang, goHome }) {
   const C = mode === "dark" ? DARK : LIGHT;
   const t = I18N[lang];
   const [result, setResult]               = useState(null);
@@ -184,6 +184,10 @@ JSON only: {"prayer": "full prayer text"}`;
             "{state.text}"
           </div>
         </div>
+        <button onClick={goHome} style={{
+          background: "transparent", border: "none",
+          color: C.amber, cursor: "pointer", fontSize: "18px", padding: "0", marginRight: "8px",
+        }} title="처음으로">✝</button>
         <button onClick={toggleMode} style={{
           background: "transparent", border: `1px solid ${C.border}`,
           color: C.textDim, padding: "6px 12px", borderRadius: "2px",

@@ -2,10 +2,16 @@ import { useState } from "react";
 import { PAIN_TYPES } from "../data/painTypes";
 import { I18N } from "../data/i18n";
 
-export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lang }) {
+export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lang, setLang, goHome }) {
   const [hovered, setHovered] = useState(null);
   const t = I18N[lang];
   const pains = PAIN_TYPES[lang];
+
+  const LANG_TABS = [
+    { id: "ko", label: "한국어" },
+    { id: "en", label: "English" },
+    { id: "id", label: "ID" },
+  ];
 
   return (
     <div style={{
@@ -13,23 +19,42 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lan
       fontFamily: "'Georgia','Noto Serif KR',serif",
     }}>
       <div style={{
-        borderBottom: `1px solid ${C.border}`, padding: "16px 20px",
+        borderBottom: `1px solid ${C.border}`, padding: "14px 20px",
         background: C.surface,
-        display: "flex", justifyContent: "space-between", alignItems: "flex-start",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
-        <div>
-          <div style={{ fontSize: "10px", letterSpacing: "3px", color: C.amber, marginBottom: "5px" }}>
-            LAMENT · 탄식 · RATAPAN
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          {/* 홈 버튼 */}
+          <button onClick={goHome} style={{
+            background: "transparent", border: "none",
+            color: C.amber, cursor: "pointer", fontSize: "18px", padding: "0",
+          }} title="처음으로">✝</button>
+          <div>
+            <div style={{ fontSize: "10px", letterSpacing: "3px", color: C.amber }}>
+              LAMENT · 탄식 · RATAPAN
+            </div>
+            <div style={{ fontSize: "15px" }}>{t.appSub}</div>
           </div>
-          <div style={{ fontSize: "20px" }}>{t.appSub}</div>
         </div>
-        <button onClick={toggleMode} style={{
-          background: "transparent", border: `1px solid ${C.border}`,
-          color: C.textDim, padding: "6px 12px", borderRadius: "2px",
-          cursor: "pointer", fontSize: "12px", fontFamily: "inherit",
-        }}>
-          {mode === "dark" ? t.light : t.dark}
-        </button>
+        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+          {/* 언어 토글 */}
+          {LANG_TABS.map(l => (
+            <button key={l.id} onClick={() => setLang(l.id)} style={{
+              padding: "3px 8px", fontSize: "10px", cursor: "pointer",
+              border: `1px solid ${lang === l.id ? C.amber : C.border}`,
+              background: lang === l.id ? C.amberDim : "transparent",
+              color: lang === l.id ? C.amber : C.textDim,
+              borderRadius: "2px", fontFamily: "inherit",
+            }}>{l.label}</button>
+          ))}
+          <button onClick={toggleMode} style={{
+            background: "transparent", border: `1px solid ${C.border}`,
+            color: C.textDim, padding: "4px 8px", borderRadius: "2px",
+            cursor: "pointer", fontSize: "11px", fontFamily: "inherit", marginLeft: "4px",
+          }}>
+            {mode === "dark" ? "☀️" : "🌙"}
+          </button>
+        </div>
       </div>
 
       <div style={{ maxWidth: "620px", margin: "0 auto", padding: "24px 16px" }}>
@@ -40,10 +65,7 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lan
         }}>
           {t.onboarding}
         </div>
-        <div style={{
-          fontSize: "10px", letterSpacing: "2px",
-          color: C.textDim, marginBottom: "16px",
-        }}>
+        <div style={{ fontSize: "10px", letterSpacing: "2px", color: C.textDim, marginBottom: "16px" }}>
           {t.selectPain}
         </div>
 

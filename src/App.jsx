@@ -1,9 +1,8 @@
 import { useState } from "react";
-import LandingPage   from "./components/LandingPage";
-import LangScreen    from "./components/LangScreen";
-import SelectScreen  from "./components/SelectScreen";
-import StateScreen   from "./components/StateScreen";
-import ResultScreen  from "./components/ResultScreen";
+import LandingPage  from "./components/LandingPage";
+import SelectScreen from "./components/SelectScreen";
+import StateScreen  from "./components/StateScreen";
+import ResultScreen from "./components/ResultScreen";
 
 export const THEMES = {
   dark: {
@@ -20,24 +19,24 @@ export const THEMES = {
 
 export default function App() {
   const [phase, setPhase] = useState("landing");
-  const [lang, setLang]   = useState(null);
+  const [lang, setLang]   = useState("ko");
   const [pain, setPain]   = useState(null);
   const [state, setState] = useState(null);
   const [mode, setMode]   = useState("dark");
   const theme = THEMES[mode];
 
   function toggleMode() { setMode(m => m === "dark" ? "light" : "dark"); }
-
-  // "다른 고통의 자리로" → 고통 선택으로 (언어 유지)
+  function goHome() { setPain(null); setState(null); setPhase("landing"); }
   function restart() { setPain(null); setState(null); setPhase("select"); }
 
-  const common = { theme, mode, toggleMode, lang };
+  const common = { theme, mode, toggleMode, lang, setLang, goHome };
 
   if (phase === "landing") return (
-    <LandingPage mode={mode} toggleMode={toggleMode} onStart={() => setPhase("lang")} />
-  );
-  if (phase === "lang") return (
-    <LangScreen onSelect={l => { setLang(l); setPhase("select"); }} />
+    <LandingPage
+      mode={mode} toggleMode={toggleMode}
+      lang={lang} setLang={setLang}
+      onStart={() => setPhase("select")}
+    />
   );
   if (phase === "select") return (
     <SelectScreen onSelect={p => { setPain(p); setPhase("state"); }} {...common} />
