@@ -1,5 +1,6 @@
 import { useState } from "react";
 import LangScreen    from "./components/LangScreen";
+import LandingPage   from "./components/LandingPage";
 import SelectScreen  from "./components/SelectScreen";
 import StateScreen   from "./components/StateScreen";
 import ResultScreen  from "./components/ResultScreen";
@@ -18,19 +19,21 @@ export const THEMES = {
 };
 
 export default function App() {
-  const [lang, setLang]   = useState(null);
-  const [pain, setPain]   = useState(null);
-  const [state, setState] = useState(null);
-  const [mode, setMode]   = useState("dark");
+  const [lang, setLang]       = useState(null);
+  const [started, setStarted] = useState(false);
+  const [pain, setPain]       = useState(null);
+  const [state, setState]     = useState(null);
+  const [mode, setMode]       = useState("dark");
   const theme = THEMES[mode];
 
   function toggleMode() { setMode(m => m === "dark" ? "light" : "dark"); }
-  function restart() { setPain(null); setState(null); }
+  function restart() { setPain(null); setState(null); setStarted(false); }
 
   const common = { theme, mode, toggleMode, lang };
 
-  if (!lang)  return <LangScreen onSelect={setLang} />;
-  if (!pain)  return <SelectScreen onSelect={setPain} {...common} />;
-  if (!state) return <StateScreen pain={pain} onSelect={setState} onBack={restart} {...common} />;
+  if (!lang)     return <LangScreen onSelect={setLang} />;
+  if (!started)  return <LandingPage lang={lang} onStart={() => setStarted(true)} />;
+  if (!pain)     return <SelectScreen onSelect={setPain} {...common} />;
+  if (!state)    return <StateScreen pain={pain} onSelect={setState} onBack={() => setStarted(false)} {...common} />;
   return <ResultScreen pain={pain} state={state} onRestart={restart} {...common} />;
 }

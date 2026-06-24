@@ -50,14 +50,14 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
   const [loading, setLoading]             = useState(true);
   const [prayer, setPrayer]               = useState(null);
   const [prayerLoading, setPrayerLoading] = useState(false);
-  const [extraLang, setExtraLang]         = useState(lang === "ko" ? "ko" : "en");
+  const [extraLang, setExtraLang]         = useState(lang === "ko" ? "ko" : lang === "id" ? "id" : "en");
 
   useEffect(() => { fetchResult(); }, []);
 
   const langInstruction = {
-    ko: "한국어로 응답하세요. 성경은 개역개정과 NIV를 모두 제공하세요.",
-    en: "Respond in English. Provide scripture in NIV.",
-    id: "Jawab dalam Bahasa Indonesia. Sertakan ayat dalam Terjemahan Baru (Indonesian) dan NIV (English).",
+    ko: "한국어로 응답하세요. 한국어 성경은 개역한글(공개 도메인) 버전을 사용하세요. 영어 병행은 KJV(King James Version, 공개 도메인)를 사용하세요.",
+    en: "Respond in English. Use King James Version (KJV, public domain) for all scripture.",
+    id: "Jawab dalam Bahasa Indonesia. Untuk ayat Indonesia gunakan AYT (Alkitab Yang Terbuka, domain publik). Untuk ayat Inggris gunakan WEB (World English Bible, domain publik).",
   }[lang];
 
   async function fetchResult() {
@@ -72,19 +72,19 @@ Respond in JSON only:
   "comfort": "Short comforting phrase (max 15 chars or words)",
   "verse": {
     "ref": "Main verse reference",
-    "text_ko": "Full text in Korean (개역개정, 2-4 verses)",
-    "text_en": "Full text in NIV (2-4 verses)",
-    "text_id": "Full text in Indonesian TB (if applicable)",
+    "text_ko": "Full text in Korean 개역한글 (2-4 verses)",
+    "text_en": "Full text in KJV English (2-4 verses)",
+    "text_id": "Full text in AYT Indonesian (if applicable)",
     "then_there": "2-3 sentences on historical/linguistic/theological context. Include 1 original language word.",
     "now_here": "2 sentences connecting '${state.text}' to this verse. No overlap with reflection."
   },
   "reflection": "3 sentences as a companion, not a preacher. No overlap with then_there or now_here.",
   "extra_ot": [
-    { "ref": "OT ref 1", "text_ko": "Korean", "text_en": "NIV", "text_id": "TB" },
-    { "ref": "OT ref 2", "text_ko": "Korean", "text_en": "NIV", "text_id": "TB" }
+    { "ref": "OT ref 1", "text_ko": "개역한글", "text_en": "KJV", "text_id": "AYT" },
+    { "ref": "OT ref 2", "text_ko": "개역한글", "text_en": "KJV", "text_id": "AYT" }
   ],
   "extra_nt": [
-    { "ref": "NT ref", "text_ko": "Korean", "text_en": "NIV", "text_id": "TB" }
+    { "ref": "NT ref", "text_ko": "개역한글", "text_en": "KJV", "text_id": "AYT" }
   ]
 }`;
 
@@ -161,10 +161,10 @@ JSON only: {"prayer": "full prayer text"}`;
   };
 
   const extraLangOptions = lang === "ko"
-    ? [{ id: "ko", label: "개역" }, { id: "en", label: "NIV" }]
+    ? [{ id: "ko", label: "개역한글" }, { id: "en", label: "KJV" }]
     : lang === "id"
-    ? [{ id: "id", label: "TB" }, { id: "en", label: "NIV" }]
-    : [{ id: "en", label: "NIV" }];
+    ? [{ id: "id", label: "AYT" }, { id: "en", label: "WEB" }]
+    : [{ id: "en", label: "KJV" }];
 
   return (
     <div style={{
