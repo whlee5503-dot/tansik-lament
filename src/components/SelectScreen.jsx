@@ -2,16 +2,17 @@ import { useState } from "react";
 import { PAIN_TYPES } from "../data/painTypes";
 import { I18N } from "../data/i18n";
 
-export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lang, setLang, goHome }) {
+const LANG_FLAGS = [
+  { id: "ko", flag: "🇰🇷" },
+  { id: "en", flag: "🇺🇸" },
+  { id: "id", flag: "🇮🇩" },
+];
+
+export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lang, goHome }) {
   const [hovered, setHovered] = useState(null);
   const t = I18N[lang];
   const pains = PAIN_TYPES[lang];
-
-  const LANG_TABS = [
-    { id: "ko", flag: "🇰🇷" },
-    { id: "en", flag: "🇺🇸" },
-    { id: "id", flag: "🇮🇩" },
-  ];
+  const currentFlag = LANG_FLAGS.find(l => l.id === lang)?.flag;
 
   return (
     <div style={{
@@ -24,25 +25,20 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lan
         background: C.surface,
         display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ fontSize: "10px", letterSpacing: "3px", color: C.amber }}>
-            LAMENT · 탄식 · RATAPAN
-          </div>
+        <div style={{ fontSize: "10px", letterSpacing: "3px", color: C.amber }}>
+          LAMENT · 탄식 · RATAPAN
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-          {LANG_TABS.map(l => (
-            <button key={l.id} onClick={() => setLang(l.id)} style={{
-              padding: "4px 10px", fontSize: "11px", cursor: "pointer",
-              border: `1px solid ${lang === l.id ? C.amber : C.border}`,
-              background: lang === l.id ? C.amberDim : "transparent",
-              color: lang === l.id ? C.amber : C.textDim,
-              borderRadius: "2px", fontFamily: "inherit",
-            }}>{l.flag}</button>
-          ))}
+          {/* 선택된 언어 국기만 표시 */}
+          <span style={{
+            fontSize: "20px", padding: "4px 8px",
+            border: `1px solid ${C.amber}`,
+            borderRadius: "4px", background: C.amberDim,
+          }}>{currentFlag}</span>
           <button onClick={toggleMode} style={{
             background: "transparent", border: `1px solid ${C.border}`,
             color: C.textDim, padding: "4px 8px", borderRadius: "2px",
-            cursor: "pointer", fontSize: "12px", fontFamily: "inherit", marginLeft: "2px",
+            cursor: "pointer", fontSize: "12px", fontFamily: "inherit",
           }}>
             {mode === "dark" ? "☀️" : "🌙"}
           </button>
@@ -89,7 +85,7 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lan
           </div>
         ))}
 
-        {/* 하단 — 처음으로 돌아가기 */}
+        {/* 하단 — 언어 변경 안내 */}
         <button onClick={goHome} style={{
           marginTop: "16px", width: "100%", padding: "12px",
           background: "transparent",
@@ -98,7 +94,7 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lan
           cursor: "pointer", fontFamily: "inherit",
           fontSize: "13px", letterSpacing: "0.5px",
         }}>
-          🏠 {lang === "ko" ? "처음으로 돌아가기" : lang === "id" ? "Kembali ke awal" : "Back to home"}
+          🏠 {lang === "ko" ? "처음으로 (언어 변경)" : lang === "id" ? "Kembali (Ganti bahasa)" : "Home (Change language)"}
         </button>
       </div>
     </div>

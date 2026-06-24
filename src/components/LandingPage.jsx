@@ -186,6 +186,10 @@ export default function LandingPage({ onStart, mode, toggleMode, lang, setLang }
           </div>
         </div>
 
+        {/* 언어 선택 안내 */}
+        <div style={{ fontSize: "12px", color: C.textMute, textAlign: "center", marginBottom: "10px", lineHeight: "1.7" }}>
+          {activeLang === "ko" ? "선택한 언어로 앱이 진행됩니다. 이후 변경하려면 처음으로 돌아오세요." : activeLang === "id" ? "Aplikasi akan berjalan dalam bahasa yang dipilih. Untuk mengubah, kembali ke halaman ini." : "The app will proceed in your selected language. Return here to change it."}
+        </div>
         {/* 시작하기 */}
         <button onClick={onStart} style={{
           width: "100%", padding: "15px",

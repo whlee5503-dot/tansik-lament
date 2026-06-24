@@ -26,15 +26,13 @@ export default function StateScreen({ pain, onSelect, onBack, theme: C, mode, to
           {pain.icon} {pain.label}
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-          {LANG_TABS.map(l => (
-            <button key={l.id} onClick={() => setLang(l.id)} style={{
-              padding: "4px 10px", fontSize: "11px", cursor: "pointer",
-              border: `1px solid ${lang === l.id ? C.amber : C.border}`,
-              background: lang === l.id ? C.amberDim : "transparent",
-              color: lang === l.id ? C.amber : C.textDim,
-              borderRadius: "2px", fontFamily: "inherit",
-            }}>{l.flag}</button>
-          ))}
+          <span style={{
+            fontSize: "20px", padding: "4px 8px",
+            border: `1px solid ${C.amber}`,
+            borderRadius: "4px", background: C.amberDim,
+          }}>
+            {LANG_TABS.find(l => l.id === lang)?.flag}
+          </span>
           <button onClick={toggleMode} style={{
             background: "transparent", border: `1px solid ${C.border}`,
             color: C.textDim, padding: "4px 8px", borderRadius: "2px",
