@@ -25,12 +25,12 @@ export default function VerseCard({ verse, reflection, mode = "dark", lang = "ko
     { id: "reflection", label: t.tabWith },
   ];
 
-  // 인도네시아어는 개역 대신 TB(Terjemahan Baru) / NIV 토글
+  // 인도네시아어는 AYT / KJV 토글
   const langOptions = lang === "ko"
-    ? [{ id: "ko", label: "개역한글" }, { id: "en", label: "NIV" }]
+    ? [{ id: "ko", label: "개역한글" }, { id: "en", label: "KJV" }]
     : lang === "en"
-    ? [{ id: "en", label: "NIV" }]
-    : [{ id: "id", label: "AYT" }, { id: "en", label: "NIV" }];
+    ? [{ id: "en", label: "KJV" }]
+    : [{ id: "id", label: "AYT" }, { id: "en", label: "KJV" }];
 
   return (
     <div style={{
