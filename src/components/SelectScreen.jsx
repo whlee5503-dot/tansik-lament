@@ -28,7 +28,7 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lan
           <button onClick={goHome} style={{
             background: "transparent", border: "none",
             color: C.amber, cursor: "pointer", fontSize: "18px", padding: "0",
-          }} title="처음으로">✝</button>
+          }} title="처음으로">🏠</button>
           <div>
             <div style={{ fontSize: "10px", letterSpacing: "3px", color: C.amber }}>
               LAMENT · 탄식 · RATAPAN
@@ -93,7 +93,7 @@ export default function SelectScreen({ onSelect, theme: C, mode, toggleMode, lan
           marginTop: "24px", padding: "16px",
           borderTop: `1px solid ${C.border}`,
           textAlign: "center", fontSize: "11px",
-          color: C.textMute, lineHeight: "1.9",
+          color: C.textDim, lineHeight: "1.9",
         }}>
           {t.tagline}
         </div>

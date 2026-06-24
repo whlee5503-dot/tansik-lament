@@ -4,7 +4,7 @@ import { I18N } from "../data/i18n";
 
 const DARK = {
   bg: "#0D0F14", surface: "#161922", border: "#252A36",
-  textPrim: "#E2DED6", textDim: "#7A8099", textMute: "#3D4358",
+  textPrim: "#E2DED6", textDim: "#7A8099", textMute: "#6B7090",
   amber: "#C89B4A", amberDim: "#5C4520",
 };
 const LIGHT = {
@@ -187,7 +187,7 @@ JSON only: {"prayer": "full prayer text"}`;
         <button onClick={goHome} style={{
           background: "transparent", border: "none",
           color: C.amber, cursor: "pointer", fontSize: "18px", padding: "0", marginRight: "8px",
-        }} title="처음으로">✝</button>
+        }} title="처음으로">🏠</button>
         <button onClick={toggleMode} style={{
           background: "transparent", border: `1px solid ${C.border}`,
           color: C.textDim, padding: "6px 12px", borderRadius: "2px",

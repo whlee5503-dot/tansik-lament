@@ -25,7 +25,7 @@ export default function StateScreen({ pain, onSelect, onBack, theme: C, mode, to
           <button onClick={goHome} style={{
             background: "transparent", border: "none",
             color: C.amber, cursor: "pointer", fontSize: "18px", padding: "0",
-          }} title="처음으로">✝</button>
+          }} title="처음으로">🏠</button>
           <div>
             <div style={{ fontSize: "10px", letterSpacing: "2px", color: C.amber }}>
               {pain.icon} {pain.label}
