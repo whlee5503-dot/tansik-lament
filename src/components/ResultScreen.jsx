@@ -9,14 +9,14 @@ const DARK = {
 };
 const LIGHT = {
   bg: "#F7F4EE", surface: "#FFFFFF", border: "#DDD8CC",
-  textPrim: "#1C1810", textDim: "#6B6355", textMute: "#B0A898",
+  textPrim: "#1C1810", textDim: "#6B6355", textMute: "#8B8070",
   amber: "#8B6420", amberDim: "#E8D9B8",
 };
 
 const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
 
 async function callClaude(system, messages) {
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -26,12 +26,12 @@ async function callClaude(system, messages) {
     },
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
-      max_tokens: 3000,
+      max_tokens: 1500,
       system,
       messages,
     }),
   });
-  return response.json();
+  return res.json();
 }
 
 function LoadingDots({ color }) {
@@ -46,39 +46,78 @@ function LoadingDots({ color }) {
 export default function ResultScreen({ pain, state, onRestart, mode, toggleMode, lang, setLang, goHome }) {
   const C = mode === "dark" ? DARK : LIGHT;
   const t = I18N[lang];
-  const [result, setResult]               = useState(null);
-  const [loading, setLoading]             = useState(true);
-  const [prayer, setPrayer]               = useState(null);
-  const [prayerLoading, setPrayerLoading] = useState(false);
-  const [extraLang, setExtraLang]         = useState(lang === "ko" ? "ko" : lang === "id" ? "id" : "en");
 
-  useEffect(() => { fetchResult(); }, []);
+  // 1단계: 주 본문
+  const [verse, setVerse]           = useState(null);
+  const [verseLoading, setVerseLoading] = useState(true);
+
+  // 2단계: 함께 읽을 말씀 (백그라운드)
+  const [extra, setExtra]           = useState(null);
+
+  // 3단계: 탄식 기도문 (버튼 클릭)
+  const [prayer, setPrayer]         = useState(null);
+  const [prayerLoading, setPrayerLoading] = useState(false);
+
+  const [extraLang, setExtraLang]   = useState(lang === "ko" ? "ko" : lang === "id" ? "id" : "en");
+
+  const LANG_TABS = [
+    { id: "ko", label: "한국어" },
+    { id: "en", label: "English" },
+    { id: "id", label: "ID" },
+  ];
 
   const langInstruction = {
-    ko: "한국어로 응답하세요. 한국어 성경은 개역한글(공개 도메인) 버전을 사용하세요. 영어 병행은 KJV(King James Version, 공개 도메인)를 사용하세요.",
+    ko: "한국어로 응답하세요. 성경은 개역한글(공개 도메인)을 사용하세요. 영어 병행은 KJV를 사용하세요.",
     en: "Respond in English. Use King James Version (KJV, public domain) for all scripture.",
-    id: "Jawab dalam Bahasa Indonesia. Untuk ayat Indonesia gunakan AYT (Alkitab Yang Terbuka, domain publik). Untuk ayat Inggris gunakan WEB (World English Bible, domain publik).",
+    id: "Jawab dalam Bahasa Indonesia. Gunakan AYT (Alkitab Yang Terbuka) untuk ayat Indonesia. Untuk ayat Inggris gunakan WEB (World English Bible).",
   }[lang];
 
-  async function fetchResult() {
-    setLoading(true);
-    const system = `You are a pastoral counselor deeply versed in lament theology, the book of Job, lament Psalms (22, 42, 77, 88), and Lamentations. You also know NT passages on suffering (Rom 8:18, 2 Cor 12:9, Heb 4:15, John 11:35). Never give empty comfort. Sit with people in their pain. Use both OT and NT. ${langInstruction}`;
+  const system = `You are a pastoral counselor deeply versed in lament theology, Job, lament Psalms (22, 42, 77, 88), and Lamentations. Also know NT passages on suffering (Rom 8:18, 2 Cor 12:9, Heb 4:15, John 11:35). Never give empty comfort. Sit with people in their pain. ${langInstruction}`;
 
+  // 1단계: 주 본문만 먼저 요청 (빠름)
+  useEffect(() => {
+    fetchVerse();
+  }, []);
+
+  async function fetchVerse() {
+    setVerseLoading(true);
     const prompt = `Pain type: ${pain.label} (${pain.sub})
 Current state: "${state.text}"
 
-Respond in JSON only:
+Respond in JSON only — main verse and reflection only:
 {
-  "comfort": "Short comforting phrase (max 15 chars or words)",
+  "comfort": "Short comforting phrase (max 12 words)",
   "verse": {
-    "ref": "Main verse reference",
-    "text_ko": "Full text in Korean 개역한글 (2-4 verses)",
-    "text_en": "Full text in KJV English (2-4 verses)",
-    "text_id": "Full text in AYT Indonesian (if applicable)",
-    "then_there": "2-3 sentences on historical/linguistic/theological context. Include 1 original language word.",
-    "now_here": "2 sentences connecting '${state.text}' to this verse. No overlap with reflection."
+    "ref": "verse reference",
+    "text_ko": "Korean 개역한글 (2-3 verses)",
+    "text_en": "KJV English (2-3 verses)",
+    "text_id": "AYT Indonesian (2-3 verses)",
+    "then_there": "2 sentences: historical/linguistic context. Include 1 original language word.",
+    "now_here": "2 sentences connecting '${state.text}' to this verse."
   },
-  "reflection": "3 sentences as a companion, not a preacher. No overlap with then_there or now_here.",
+  "reflection": "3 sentences as companion. No overlap with then_there or now_here."
+}`;
+
+    try {
+      const data = await callClaude(system, [{ role: "user", content: prompt }]);
+      const raw = data.content?.map(i => i.text || "").join("").replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(raw);
+      setVerse(parsed);
+      // 주 본문 표시 후 백그라운드에서 추가 본문 요청
+      fetchExtra();
+    } catch {
+      setVerse(null);
+    } finally {
+      setVerseLoading(false);
+    }
+  }
+
+  // 2단계: 함께 읽을 말씀 (백그라운드 — 사용자는 이미 주 본문 보는 중)
+  async function fetchExtra() {
+    const prompt = `Pain type: ${pain.label}, State: "${state.text}"
+
+Respond in JSON only — additional scripture only:
+{
   "extra_ot": [
     { "ref": "OT ref 1", "text_ko": "개역한글", "text_en": "KJV", "text_id": "AYT" },
     { "ref": "OT ref 2", "text_ko": "개역한글", "text_en": "KJV", "text_id": "AYT" }
@@ -91,18 +130,17 @@ Respond in JSON only:
     try {
       const data = await callClaude(system, [{ role: "user", content: prompt }]);
       const raw = data.content?.map(i => i.text || "").join("").replace(/```json|```/g, "").trim();
-      setResult(JSON.parse(raw));
+      setExtra(JSON.parse(raw));
     } catch {
-      setResult(null);
-    } finally {
-      setLoading(false);
+      setExtra(null);
     }
   }
 
+  // 3단계: 탄식 기도문 (버튼 클릭 시)
   async function fetchPrayer() {
     setPrayerLoading(true);
     const prompt = `Pain: ${pain.label}, State: "${state.text}"
-Write a lament prayer for this person. 6-8 lines. Honest, questioning God directly.
+Write a lament prayer. 6-8 lines. Honest, questioning God directly.
 ${langInstruction}
 JSON only: {"prayer": "full prayer text"}`;
     try {
@@ -119,7 +157,25 @@ JSON only: {"prayer": "full prayer text"}`;
     }
   }
 
-  if (loading) return (
+  const extraLangOptions = lang === "ko"
+    ? [{ id: "ko", label: "개역한글" }, { id: "en", label: "KJV" }]
+    : lang === "id"
+    ? [{ id: "id", label: "AYT" }, { id: "en", label: "WEB" }]
+    : [{ id: "en", label: "KJV" }];
+
+  const extraText = (e) => {
+    if (extraLang === "ko") return e.text_ko;
+    if (extraLang === "id") return e.text_id || e.text_en;
+    return e.text_en;
+  };
+
+  const allExtra = [
+    ...(extra?.extra_ot || []).map(e => ({ ...e, type: "OT" })),
+    ...(extra?.extra_nt || []).map(e => ({ ...e, type: "NT" })),
+  ];
+
+  // 로딩 화면 (주 본문 대기 중)
+  if (verseLoading) return (
     <div style={{
       minHeight: "100vh", background: C.bg, color: C.textPrim,
       fontFamily: "'Georgia','Noto Serif KR',serif",
@@ -132,7 +188,8 @@ JSON only: {"prayer": "full prayer text"}`;
     </div>
   );
 
-  if (!result) return (
+  // 오류 화면
+  if (!verse) return (
     <div style={{
       minHeight: "100vh", background: C.bg, color: C.textPrim,
       fontFamily: "'Georgia','Noto Serif KR',serif",
@@ -140,7 +197,7 @@ JSON only: {"prayer": "full prayer text"}`;
       alignItems: "center", justifyContent: "center", gap: "16px",
     }}>
       <div style={{ fontSize: "14px", color: C.textDim }}>{t.failed}</div>
-      <button onClick={fetchResult} style={{
+      <button onClick={fetchVerse} style={{
         padding: "10px 24px", background: C.amber,
         color: mode === "dark" ? "#0D0F14" : "#FFFFFF",
         border: "none", borderRadius: "2px", cursor: "pointer",
@@ -149,69 +206,70 @@ JSON only: {"prayer": "full prayer text"}`;
     </div>
   );
 
-  const allExtra = [
-    ...(result.extra_ot || []).map(e => ({ ...e, type: "OT" })),
-    ...(result.extra_nt || []).map(e => ({ ...e, type: "NT" })),
-  ];
-
-  const extraText = (e) => {
-    if (extraLang === "ko") return e.text_ko;
-    if (extraLang === "id") return e.text_id || e.text_en;
-    return e.text_en;
-  };
-
-  const extraLangOptions = lang === "ko"
-    ? [{ id: "ko", label: "개역한글" }, { id: "en", label: "KJV" }]
-    : lang === "id"
-    ? [{ id: "id", label: "AYT" }, { id: "en", label: "WEB" }]
-    : [{ id: "en", label: "KJV" }];
-
   return (
     <div style={{
       minHeight: "100vh", background: C.bg, color: C.textPrim,
       fontFamily: "'Georgia','Noto Serif KR',serif",
     }}>
+      {/* 헤더 */}
       <div style={{
         background: C.surface, borderBottom: `1px solid ${C.border}`,
         padding: "14px 20px",
         display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
-        <div>
-          <div style={{ fontSize: "10px", letterSpacing: "2px", color: C.amber }}>
-            {pain.icon} {pain.label}
-          </div>
-          <div style={{ fontSize: "13px", color: C.textDim, marginTop: "2px" }}>
-            "{state.text}"
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <button onClick={goHome} style={{
+            background: "transparent", border: "none",
+            color: C.amber, cursor: "pointer", fontSize: "20px", padding: "0",
+          }}>🏠</button>
+          <div>
+            <div style={{ fontSize: "10px", letterSpacing: "2px", color: C.amber }}>
+              {pain.icon} {pain.label}
+            </div>
+            <div style={{ fontSize: "12px", color: C.textDim, marginTop: "1px" }}>
+              "{state.text}"
+            </div>
           </div>
         </div>
-        <button onClick={goHome} style={{
-          background: "transparent", border: "none",
-          color: C.amber, cursor: "pointer", fontSize: "18px", padding: "0", marginRight: "8px",
-        }} title="처음으로">🏠</button>
-        <button onClick={toggleMode} style={{
-          background: "transparent", border: `1px solid ${C.border}`,
-          color: C.textDim, padding: "6px 12px", borderRadius: "2px",
-          cursor: "pointer", fontSize: "12px", fontFamily: "inherit",
-        }}>
-          {mode === "dark" ? t.light : t.dark}
-        </button>
+        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+          {LANG_TABS.map(l => (
+            <button key={l.id} onClick={() => setLang(l.id)} style={{
+              padding: "3px 8px", fontSize: "10px", cursor: "pointer",
+              border: `1px solid ${lang === l.id ? C.amber : C.border}`,
+              background: lang === l.id ? C.amberDim : "transparent",
+              color: lang === l.id ? C.amber : C.textDim,
+              borderRadius: "2px", fontFamily: "inherit",
+            }}>{l.label}</button>
+          ))}
+          <button onClick={toggleMode} style={{
+            background: "transparent", border: `1px solid ${C.border}`,
+            color: C.textDim, padding: "4px 8px", borderRadius: "2px",
+            cursor: "pointer", fontSize: "11px", fontFamily: "inherit", marginLeft: "4px",
+          }}>
+            {mode === "dark" ? "☀️" : "🌙"}
+          </button>
+        </div>
       </div>
 
       <div style={{ maxWidth: "640px", margin: "0 auto", padding: "24px 16px 48px" }}>
+
+        {/* 위로 한 마디 */}
         <div style={{
-          textAlign: "center", padding: "24px 0 20px",
+          textAlign: "center", padding: "20px 0 16px",
           fontSize: "18px", color: C.amber, lineHeight: "1.7",
         }}>
-          {result.comfort}
+          {verse.comfort}
         </div>
 
-        {result.verse && (
+        {/* 주 본문 카드 */}
+        {verse.verse && (
           <div style={{ marginBottom: "16px" }}>
-            <VerseCard verse={result.verse} reflection={result.reflection} mode={mode} lang={lang} />
+            <VerseCard verse={verse.verse} reflection={verse.reflection} mode={mode} lang={lang} />
           </div>
         )}
 
-        {allExtra.length > 0 && (
+        {/* 함께 읽을 말씀 — 백그라운드 로딩 */}
+        {allExtra.length > 0 ? (
           <div style={{
             background: C.surface, border: `1px solid ${C.border}`,
             padding: "18px 20px", borderRadius: "2px", marginBottom: "16px",
@@ -263,8 +321,21 @@ JSON only: {"prayer": "full prayer text"}`;
               </div>
             ))}
           </div>
+        ) : extra === null && (
+          // 백그라운드 로딩 중 표시
+          <div style={{
+            background: C.surface, border: `1px solid ${C.border}`,
+            padding: "16px 20px", borderRadius: "2px", marginBottom: "16px",
+            display: "flex", alignItems: "center", gap: "10px",
+          }}>
+            <div style={{ fontSize: "10px", color: C.textDim, letterSpacing: "2px" }}>
+              {t.extraTitle}
+            </div>
+            <LoadingDots color={C.amber} />
+          </div>
         )}
 
+        {/* 탄식 기도문 */}
         {!prayer && (
           <button onClick={fetchPrayer} disabled={prayerLoading} style={{
             width: "100%", padding: "13px",
