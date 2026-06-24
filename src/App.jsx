@@ -3,6 +3,7 @@ import LandingPage  from "./components/LandingPage";
 import SelectScreen from "./components/SelectScreen";
 import StateScreen  from "./components/StateScreen";
 import ResultScreen from "./components/ResultScreen";
+import { PAIN_TYPES } from "./data/painTypes";
 
 export const THEMES = {
   dark: {
@@ -18,25 +19,33 @@ export const THEMES = {
 };
 
 export default function App() {
-  const [phase, setPhase] = useState("landing");
-  const [lang, setLang]   = useState("ko");
-  const [pain, setPain]   = useState(null);
-  const [state, setState] = useState(null);
-  const [mode, setMode]   = useState("dark");
+  const [phase, setPhase]     = useState("landing");
+  const [lang, setLang]       = useState("ko");
+  const [pain, setPain]       = useState(null);
+  const [state, setState]     = useState(null);
+  const [mode, setMode]       = useState("dark");
+  const [resultKey, setResultKey] = useState(0);
   const theme = THEMES[mode];
 
   function toggleMode() { setMode(m => m === "dark" ? "light" : "dark"); }
   function goHome() { setPain(null); setState(null); setPhase("landing"); }
   function restart() { setPain(null); setState(null); setPhase("select"); }
 
-  const common = { theme, mode, toggleMode, lang, setLang, goHome };
+  function changeLang(newLang) {
+    setLang(newLang);
+    // pain이 선택된 상태라면 새 언어의 pain 객체로 교체
+    if (pain) {
+      const newPain = PAIN_TYPES[newLang]?.find(p => p.id === pain.id);
+      if (newPain) setPain(newPain);
+    }
+    // ResultScreen 완전 리셋
+    setResultKey(k => k + 1);
+  }
+
+  const common = { theme, mode, toggleMode, lang, setLang: changeLang, goHome };
 
   if (phase === "landing") return (
-    <LandingPage
-      mode={mode} toggleMode={toggleMode}
-      lang={lang} setLang={setLang}
-      onStart={() => setPhase("select")}
-    />
+    <LandingPage mode={mode} toggleMode={toggleMode} lang={lang} setLang={changeLang} onStart={() => setPhase("select")} />
   );
   if (phase === "select") return (
     <SelectScreen onSelect={p => { setPain(p); setPhase("state"); }} {...common} />
@@ -45,6 +54,6 @@ export default function App() {
     <StateScreen pain={pain} onSelect={s => { setState(s); setPhase("result"); }} onBack={() => setPhase("select")} {...common} />
   );
   return (
-    <ResultScreen pain={pain} state={state} onRestart={restart} {...common} />
+    <ResultScreen key={resultKey} pain={pain} state={state} onRestart={restart} {...common} />
   );
 }
