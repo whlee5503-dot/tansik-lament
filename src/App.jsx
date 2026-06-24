@@ -31,9 +31,9 @@ export default function App() {
 
   const common = { theme, mode, toggleMode, lang };
 
-  if (!lang)     return <LangScreen onSelect={setLang} />;
-  if (!started)  return <LandingPage lang={lang} onStart={() => setStarted(true)} />;
-  if (!pain)     return <SelectScreen onSelect={setPain} {...common} />;
-  if (!state)    return <StateScreen pain={pain} onSelect={setState} onBack={() => setStarted(false)} {...common} />;
+  if (!lang)    return <LangScreen onSelect={setLang} />;
+  if (!started) return <LandingPage lang={lang} onStart={() => setStarted(true)} mode={mode} toggleMode={toggleMode} />;
+  if (!pain)    return <SelectScreen onSelect={setPain} {...common} />;
+  if (!state)   return <StateScreen pain={pain} onSelect={setState} onBack={() => setStarted(false)} {...common} />;
   return <ResultScreen pain={pain} state={state} onRestart={restart} {...common} />;
 }

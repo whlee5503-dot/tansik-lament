@@ -1,13 +1,23 @@
-import { useState } from "react";
-
-const C = {
+const DARK = {
   bg:      "#0D0F14",
   surface: "#161922",
   border:  "#252A36",
   text:    "#E2DED6",
   textDim: "#7A8099",
-  textMute:"#3D4358",
+  textMute:"#6B7090",
   amber:   "#C89B4A",
+  amberDim:"#5C4520",
+};
+
+const LIGHT = {
+  bg:      "#F7F4EE",
+  surface: "#FFFFFF",
+  border:  "#DDD8CC",
+  text:    "#1C1810",
+  textDim: "#6B6355",
+  textMute:"#8B8070",
+  amber:   "#8B6420",
+  amberDim:"#E8D9B8",
 };
 
 const CONTENT = {
@@ -23,7 +33,10 @@ const CONTENT = {
       { lang: "English", version: "King James Version (KJV)" },
       { lang: "Indonesia", version: "AYT · WEB" },
     ],
+    bibleNote: "* AI가 생성한 본문은 공개 도메인 버전을 기반으로 하며, 정확한 본문은 해당 성경을 직접 확인하세요.",
     start: "시작하기 →",
+    light: "☀️ 라이트",
+    dark: "🌙 다크",
   },
   en: {
     subtitle: "Nearly half the Psalms are laments",
@@ -37,7 +50,10 @@ const CONTENT = {
       { lang: "English", version: "King James Version (KJV)" },
       { lang: "Indonesia", version: "AYT · WEB" },
     ],
+    bibleNote: "* AI-generated text is based on public domain versions. Please verify exact wording in your own Bible.",
     start: "Begin →",
+    light: "☀️ Light",
+    dark: "🌙 Dark",
   },
   id: {
     subtitle: "Hampir setengah Mazmur adalah ratapan",
@@ -51,12 +67,15 @@ const CONTENT = {
       { lang: "English", version: "King James Version (KJV)" },
       { lang: "Indonesia", version: "AYT · WEB" },
     ],
+    bibleNote: "* Teks yang dihasilkan AI didasarkan pada versi domain publik. Harap verifikasi teks yang tepat di Alkitab Anda.",
     start: "Mulai →",
+    light: "☀️ Terang",
+    dark: "🌙 Gelap",
   },
 };
 
-export default function LandingPage({ lang, onStart }) {
-  const [expanded, setExpanded] = useState(false);
+export default function LandingPage({ lang, onStart, mode, toggleMode }) {
+  const C = mode === "dark" ? DARK : LIGHT;
   const t = CONTENT[lang] || CONTENT.ko;
 
   return (
@@ -67,18 +86,29 @@ export default function LandingPage({ lang, onStart }) {
       {/* 헤더 */}
       <div style={{
         background: C.surface, borderBottom: `1px solid ${C.border}`,
-        padding: "24px 20px", textAlign: "center",
+        padding: "20px 20px 16px",
+        display: "flex", justifyContent: "space-between", alignItems: "flex-start",
       }}>
-        <svg width="32" height="40" viewBox="0 0 32 40" style={{ marginBottom: "12px" }}>
-          <line x1="16" y1="2" x2="16" y2="38" stroke="#C89B4A" strokeWidth="5" strokeLinecap="round"/>
-          <line x1="4" y1="13" x2="28" y2="13" stroke="#C89B4A" strokeWidth="5" strokeLinecap="round"/>
-        </svg>
-        <div style={{ fontSize: "22px", marginBottom: "6px" }}>
-          Lament · 탄식 · Ratapan
+        <div style={{ textAlign: "center", flex: 1 }}>
+          <svg width="28" height="36" viewBox="0 0 32 40" style={{ marginBottom: "10px" }}>
+            <line x1="16" y1="2" x2="16" y2="38" stroke={C.amber} strokeWidth="5" strokeLinecap="round"/>
+            <line x1="4" y1="13" x2="28" y2="13" stroke={C.amber} strokeWidth="5" strokeLinecap="round"/>
+          </svg>
+          <div style={{ fontSize: "20px", marginBottom: "4px" }}>
+            Lament · 탄식 · Ratapan
+          </div>
+          <div style={{ fontSize: "12px", color: C.amber, fontStyle: "italic" }}>
+            "{t.subtitle}"
+          </div>
         </div>
-        <div style={{ fontSize: "13px", color: C.amber, fontStyle: "italic" }}>
-          "{t.subtitle}"
-        </div>
+        <button onClick={toggleMode} style={{
+          background: "transparent", border: `1px solid ${C.border}`,
+          color: C.textDim, padding: "6px 10px", borderRadius: "2px",
+          cursor: "pointer", fontSize: "11px", fontFamily: "inherit",
+          flexShrink: 0,
+        }}>
+          {mode === "dark" ? t.light : t.dark}
+        </button>
       </div>
 
       <div style={{ maxWidth: "620px", margin: "0 auto", padding: "24px 16px 48px" }}>
@@ -121,7 +151,7 @@ export default function LandingPage({ lang, onStart }) {
             }}>
               <div style={{
                 width: "26px", height: "26px", borderRadius: "50%",
-                background: C.amber, color: C.bg,
+                background: C.amber, color: mode === "dark" ? "#0D0F14" : "#FFFFFF",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: "12px", fontWeight: "bold", flexShrink: 0,
               }}>
@@ -158,16 +188,16 @@ export default function LandingPage({ lang, onStart }) {
           ))}
           <div style={{
             fontSize: "11px", color: C.textMute,
-            marginTop: "8px", lineHeight: "1.7",
+            marginTop: "10px", lineHeight: "1.7",
           }}>
-            * AI가 생성한 본문은 공개 도메인 버전을 기반으로 하며, 정확한 본문은 해당 성경을 직접 확인하세요.
+            {t.bibleNote}
           </div>
         </div>
 
         {/* 시작하기 버튼 */}
         <button onClick={onStart} style={{
           width: "100%", padding: "15px",
-          background: C.amber, color: C.bg,
+          background: C.amber, color: mode === "dark" ? "#0D0F14" : "#FFFFFF",
           border: "none", borderRadius: "2px",
           fontSize: "15px", letterSpacing: "2px",
           cursor: "pointer", fontFamily: "inherit",
