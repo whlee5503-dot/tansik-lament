@@ -113,6 +113,7 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
   const [openNow, setOpenNow]         = useState(false);
   const [openSitting, setOpenSitting] = useState(false);
   const [openExtra, setOpenExtra]     = useState(false);
+  const [extraLang, setExtraLang]     = useState(lang === "ko" ? "ko" : lang === "id" ? "id" : "en");
   const [loadingSection, setLoadingSection] = useState(null);
 
   const LANG_FLAGS = [
@@ -161,7 +162,7 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
         const lf = lang === "ko"
           ? '"text_ko": "개역한글", "text_en": "KJV"'
           : lang === "en" ? '"text_en": "KJV"'
-          : '"text_id": "AYT", "text_en": "WEB"';
+          : '"text_id": "AYT"';
         const data = await callClaude(system,
           'Pain: ' + pain.label + ', State: "' + state.text + '"\nJSON only: {"extra_ot":[{"ref":"OT1",' + lf + '},{"ref":"OT2",' + lf + '}],"extra_nt":[{"ref":"NT1",' + lf + '}]}', 600);
         setter(data);
@@ -189,6 +190,12 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
     ...(extra?.extra_ot || []).map(e => ({ ...e, type: "OT" })),
     ...(extra?.extra_nt || []).map(e => ({ ...e, type: "NT" })),
   ];
+
+  const extraText = (e) => {
+    if (lang === "ko") return extraLang === "ko" ? e.text_ko : e.text_en;
+    if (lang === "id") return e.text_id || e.text_en;
+    return e.text_en;
+  };
 
   if (verseLoading) return (
     <div style={{
@@ -256,6 +263,7 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
           {verse.comfort}
         </div>
 
+        {/* 본문 — 항상 표시 */}
         <div style={{
           background: C.surface, border: "1px solid " + C.border,
           borderLeft: "3px solid " + C.amber,
@@ -280,15 +288,19 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
           <div style={{ fontSize: "15px", color: C.textPrim, lineHeight: "2", fontStyle: "italic" }}>{verseText}</div>
         </div>
 
+        {/* 그때 / 거기서 */}
         <AccordionSection title={t.tabThen} content={thenThere} loading={loadingSection === "then"} isOpen={openThen} C={C}
           onToggle={() => handleSection("then", openThen, setOpenThen, thenThere, setThenThere)} />
 
+        {/* 지금 / 여기서 */}
         <AccordionSection title={t.tabNow} content={nowHere} loading={loadingSection === "now"} isOpen={openNow} C={C}
           onToggle={() => handleSection("now", openNow, setOpenNow, nowHere, setNowHere)} />
 
+        {/* 함께 앉아서 */}
         <AccordionSection title={t.tabWith} content={sitting} loading={loadingSection === "sitting"} isOpen={openSitting} C={C}
           onToggle={() => handleSection("sitting", openSitting, setOpenSitting, sitting, setSitting)} />
 
+        {/* 함께 읽을 말씀 */}
         <div style={{ marginBottom: "10px" }}>
           <button onClick={() => handleSection("extra", openExtra, setOpenExtra, extra, setExtra)} style={{
             width: "100%", padding: "13px 16px",
@@ -301,8 +313,25 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
             textAlign: "left", display: "flex", justifyContent: "space-between", alignItems: "center",
           }}>
             <span>{t.extraTitle}</span>
-            <span style={{ fontSize: "12px" }}>{openExtra ? "▲" : "▼"}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {/* 한국어만 개역한글/KJV 토글 */}
+              {lang === "ko" && openExtra && (
+                <div style={{ display: "flex", gap: "4px" }} onClick={e => e.stopPropagation()}>
+                  {[{ id: "ko", label: "개역한글" }, { id: "en", label: "KJV" }].map(l => (
+                    <button key={l.id} onClick={e => { e.stopPropagation(); setExtraLang(l.id); }} style={{
+                      padding: "2px 8px", fontSize: "10px",
+                      border: "1px solid " + (extraLang === l.id ? C.amber : C.border),
+                      background: extraLang === l.id ? C.amberDim : "transparent",
+                      color: extraLang === l.id ? C.amber : C.textDim,
+                      borderRadius: "2px", cursor: "pointer", fontFamily: "inherit",
+                    }}>{l.label}</button>
+                  ))}
+                </div>
+              )}
+              <span style={{ fontSize: "12px" }}>{openExtra ? "▲" : "▼"}</span>
+            </div>
           </button>
+
           {openExtra && (
             <div style={{
               background: C.surface, border: "1px solid " + C.border,
@@ -320,7 +349,7 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
                         </div>
                       </div>
                       <div style={{ fontSize: "14px", color: C.textPrim, lineHeight: "1.9", fontStyle: "italic" }}>
-                        {lang === "ko" ? e.text_ko : lang === "id" ? (e.text_id || e.text_en) : e.text_en}
+                        {extraText(e)}
                       </div>
                     </div>
                   ))
@@ -329,6 +358,7 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
           )}
         </div>
 
+        {/* 탄식 기도문 */}
         {!prayer ? (
           <button onClick={fetchPrayer} disabled={loadingSection === "prayer"} style={{
             width: "100%", padding: "13px",
