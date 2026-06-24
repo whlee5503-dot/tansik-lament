@@ -6,9 +6,9 @@ export default function StateScreen({ pain, onSelect, onBack, theme: C, mode, to
   const t = I18N[lang];
 
   const LANG_TABS = [
-    { id: "ko", label: "한국어" },
-    { id: "en", label: "EN" },
-    { id: "id", label: "ID" },
+    { id: "ko", flag: "🇰🇷" },
+    { id: "en", flag: "🇺🇸" },
+    { id: "id", flag: "🇮🇩" },
   ];
 
   return (
@@ -33,7 +33,7 @@ export default function StateScreen({ pain, onSelect, onBack, theme: C, mode, to
               background: lang === l.id ? C.amberDim : "transparent",
               color: lang === l.id ? C.amber : C.textDim,
               borderRadius: "2px", fontFamily: "inherit",
-            }}>{l.label}</button>
+            }}>{l.flag}</button>
           ))}
           <button onClick={toggleMode} style={{
             background: "transparent", border: `1px solid ${C.border}`,
