@@ -59,7 +59,7 @@ const CONTENT = {
     bibleNote: "* Teks yang dihasilkan AI didasarkan pada versi domain publik. Harap verifikasi teks yang tepat di Alkitab Anda.",
     start: "Mulai →",
     light: "☀️ Terang",
-    dark: "�� Gelap",
+    dark: "🌙 Gelap",
   },
 };
 
