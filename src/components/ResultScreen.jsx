@@ -12,20 +12,11 @@ const LIGHT = {
   amber: "#8B6420", amberDim: "#E8D9B8",
 };
 
-const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
-
 async function callClaude(system, prompt, maxTokens = 600) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("/api/chat", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": API_KEY,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "claude-sonnet-4-6",
-      max_tokens: maxTokens,
       system,
       messages: [{ role: "user", content: prompt }],
     }),
@@ -261,7 +252,6 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
           {verse.comfort}
         </div>
 
-        {/* 본문 — 항상 표시 */}
         <div style={{
           background: C.surface, border: "1px solid " + C.border,
           borderLeft: "3px solid " + C.amber,
@@ -286,19 +276,15 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
           <div style={{ fontSize: "15px", color: C.textPrim, lineHeight: "2", fontStyle: "italic" }}>{verseText}</div>
         </div>
 
-        {/* 그때 / 거기서 */}
         <AccordionSection title={t.tabThen} content={thenThere} loading={loadingSection === "then"} isOpen={openThen} C={C}
           onToggle={() => handleSection("then", openThen, setOpenThen, thenThere, setThenThere)} />
 
-        {/* 지금 / 여기서 */}
         <AccordionSection title={t.tabNow} content={nowHere} loading={loadingSection === "now"} isOpen={openNow} C={C}
           onToggle={() => handleSection("now", openNow, setOpenNow, nowHere, setNowHere)} />
 
-        {/* 함께 앉아서 */}
         <AccordionSection title={t.tabWith} content={sitting} loading={loadingSection === "sitting"} isOpen={openSitting} C={C}
           onToggle={() => handleSection("sitting", openSitting, setOpenSitting, sitting, setSitting)} />
 
-        {/* 함께 읽을 말씀 */}
         <div style={{ marginBottom: "10px" }}>
           <button onClick={() => handleSection("extra", openExtra, setOpenExtra, extra, setExtra)} style={{
             width: "100%", padding: "13px 16px",
@@ -312,7 +298,6 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
           }}>
             <span>{t.extraTitle}</span>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              {/* 한국어만 개역한글/KJV 토글 */}
               {lang === "ko" && openExtra && (
                 <div style={{ display: "flex", gap: "4px" }} onClick={e => e.stopPropagation()}>
                   {[{ id: "ko", label: "개역한글" }, { id: "en", label: "KJV" }].map(l => (
@@ -356,7 +341,6 @@ export default function ResultScreen({ pain, state, onRestart, mode, toggleMode,
           )}
         </div>
 
-        {/* 탄식 기도문 */}
         {!prayer ? (
           <button onClick={fetchPrayer} disabled={loadingSection === "prayer"} style={{
             width: "100%", padding: "13px",
