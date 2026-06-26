@@ -45,7 +45,7 @@ function getLangInstruction(lang) {
   return {
     ko: "한국어로 응답. 성경은 개역한글과 KJV만 제공.",
     en: "Respond in English. Use KJV only.",
-    id: "Jawab dalam Bahasa Indonesia. Gunakan AYT dan WEB.",
+    id: "Jawab dalam Bahasa Indonesia yang hangat, natural, dan tidak kaku — seperti seorang teman yang berbicara dari hati ke hati. Hindari bahasa formal atau terlalu resmi. Gunakan AYT dan WEB.",
   }[lang];
 }
 
